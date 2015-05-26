@@ -1,0 +1,17 @@
+{
+  "name": "dynamicForteScore",
+  "version": "0.0.0",
+  "description": "Dynamic performance system",
+  "main": "dfs.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "RK",
+  "license": "GPL3",
+  "dependencies": {
+    "ip": "^0.3.2",
+    "websocket": "^1.0.18",
+    "xmldom": "^0.1.19",
+    "xmlserializer": "^0.3.3"
+  }
+}

@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dfs version="0.2">
+    <composition 
+        composer="Rodrigo Constanzo"
+        title="Open Space" 
+        tempo="N/A"
+        duration="5 minutes"
+    />
+    <introduction>
+        This composition is a test piece for people to play...
+
+    </introduction>
+
+    
+    <initScript>
+        var instructions=[
+            "whisper tones",
+            "slowly moving lines",
+            "sudden/quiet flurries",
+            "NOT in time, but in tune",
+            "NOT in tune, but in time",
+            "silence",
+            "solo"  
+        ];
+        function RandomWord() {
+            return instructions[Math.floor(Math.random()*instructions.length)];
+        }
+    </initScript>
+    
+    <roles>
+        <role name="Solo" clef="treble" instrument="anything" key="C" />
+        <role name="Harmony" clef="treble" key="C" />
+        <role name="Bass" clef="bass" key="C" maxPerformers="4"/>
+    </roles>
+
+    <preamble>
+        Welcome to the first performance. Please prepare yourself.
+    </preamble>
+
+    <preamble role="Solo">
+        Hello, you are a special performer. No-one else will see this message.
+    </preamble>
+
+
+  
+   <events>
+       <event role="Solo" type="text" duration="3400">solo punk</event>
+       <event role="Solo" type="text" duration="staticScript">
+           <duration>return (Math.random()*10000)+2000</duration>
+           solo ass</event>
+
+       <timegroup duration="staticScript">
+           <duration>return (Math.random()*10000)+2000</duration>
+           <event role="Solo" type="script">
+               context.text(RandomWord());
+           </event>
+           <event role="Harmony" type="score">
+                stave
+                notation=true
+                key=C time=7/8
+                notes :8 5/2 :q 7/3 1/2 9/4  |
+                notes :q 9/4 1/2 7/3 :8 5/2  |
+            </event>
+            <event role="Bass" type="score">
+                stave
+                notation=true
+                key=D time=7/8
+                clef=bass
+                notes :w 3/6 |
+            </event>
+       </timegroup>
+       
+       <loop duration="60000">
+           <event role="Solo" type="text" duration="5000">solo vibes</event>
+           <event role="Harmony" type="text" duration="3000">harmony vibes</event>
+           <event role="Bass" type="text" duration="2000">bass vibes</event>
+       </loop>
+       
+       <timegroup duration="staticScript">
+           <duration>return (Math.random()*10000)+2000</duration>
+           <event role="Solo" type="script">
+               context.text(RandomWord());
+           </event>
+           <event role="Harmony" type="score">
+                stave
+                notation=true
+                key=C time=7/8
+                notes :q (5/2.7/3.7/4) (5/2.7/3.7/4) (5/2.7/3.7/4) :8 (5/2.7/3.7/4)  |
+                notes :q (5/2.7/3.7/4) (5/2.7/3.7/4) (5/2.7/3.7/4) :8 (5/2.7/3.7/4)  |
+            </event>
+            <event role="Bass" type="score">
+                stave
+                notation=true
+                key=C time=7/8
+                clef=bass
+                notes :w 5/6 |
+            </event>
+       </timegroup>       
+ 
+       <timegroup duration="staticScript">
+           <duration>return (Math.random()*10000)+2000</duration>
+           <event role="Solo" type="script">
+               context.text(RandomWord());
+           </event>
+           <event role="Harmony" type="score">
+                stave
+                notation=true
+                key=C time=7/8
+                notes :8 5/2 :q 7/3 1/2 9/4  |
+                notes :q 9/4 1/2 7/3 :8 5/2  |
+            </event>
+            <event role="Bass" type="score">
+                stave
+                notation=true
+                key=A time=4/4
+                clef=bass
+                notes :w 1/6 |
+            </event>
+       </timegroup>          
+                     
+       <timegroup duration="staticScript">
+           <duration>return (Math.random()*10000)+2000</duration>
+           <event role="Solo" type="script">
+               context.text(RandomWord());
+           </event>
+           <event role="Harmony" type="score">
+                stave
+                notation=true
+                key=C time=7/8
+                notes :q (5/2.4/3.7/4) (5/2.4/3.7/4) (5/2.4/3.7/4) :8 (5/2.4/3.7/4)  |
+                notes :q (5/2.4/3.7/4) (5/2.4/3.7/4) (5/2.4/3.7/4) :8 (5/2.4/3.7/4)  |
+            </event>
+            <event role="Bass" type="score">
+                stave
+                notation=true
+                key=F time=4/4
+                clef=bass
+                notes :w 1/6 |
+            </event>
+       </timegroup>  
+ 
+   </events>
+</dfs>

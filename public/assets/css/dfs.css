@@ -1,0 +1,189 @@
+.progress-bar {
+  -webkit-transition: none !important;
+  transition: none !important;
+}
+
+#performer {
+  z-index:40;
+  display:none;
+  background-color:#FFFFFF;
+}
+
+#performance {
+  z-index:50;
+  display:none;
+  background-color:#FFFFFF;
+}
+
+#greeting {
+  z-index:70;
+  display:none;
+}
+
+#loading {
+  z-index:90;
+  padding:100px;
+  display:none;
+}
+
+#performerMenu {
+  z-index:80;
+  position:fixed;
+  display:none;
+  left:0px;
+  bottom:0px;
+  width:150px;
+  height:5%;
+}
+
+#editor {
+  z-index:60;
+  display:none;
+}
+
+#overview {
+  z-index:60;
+  display:none;
+}
+
+#modal {
+  z-index:105;
+  display:none;
+}
+
+
+#fatal {
+  z-index:70;
+  padding:100px;
+}
+
+#password {
+  display:none;
+}
+
+#anonymousObserver {
+  display:none;
+}
+
+#notificationArea {
+  z-index:90;
+  display:none;
+  width:50%;
+  bottom:0px;
+  position:fixed;
+  right:0px;
+}
+
+#prepareReady {
+  display:none;
+}
+
+#miniDisplay {
+  position:fixed;
+  bottom:30px;
+  right:30px;
+  overflow:hidden;
+  box-shadow: 0px 0px 30px #888888;
+  border:0px solid #888888;
+  width:28%;
+  height:28%;
+  z-index:55;
+  background-color:#FFFFFF;
+  opacity:0.7;
+}
+
+#miniDisplayInner {
+  top:0px;
+  left:0px;
+  position:absolute;
+  width:100%;
+  height:100%;
+  transform:scale(0.5);
+  -moz-transform:scale(0.5);
+  zoom : 0.5;
+  -webkit-transform:scale(0.5);
+  -ms-transform:scale(0.5);
+}
+
+#mainDisplay {
+  z-index:55;
+  position:fixed;
+  top:0px;
+  left:0px;
+  width:100%;
+  height:100%;
+}
+
+#counterDisplay {
+  z-index:60;
+  position:fixed;
+  top:0px;
+  right:0px;
+  width:150px;
+  height:100px;
+  text-align:right;
+  font-size:36px;
+}
+
+#progressContainer {
+  z-index:60;
+  position: fixed;
+  bottom:0px;
+  left:0px;
+  width:100%;
+  height:30px;
+}
+
+#performanceProgressBar {
+  z-index:60;
+  position:absolute;
+  bottom:0px;
+  left:0px;
+  background-color:#000000;
+  height:100%;
+  width:0%;
+}
+
+#sureInner {
+  position:relative;
+  width:800px;
+  margin-left:auto;
+  margin-right:auto;
+}
+#sureText {
+  color:#FFFFFF;
+}
+
+.fullScreen {
+  background-color:#FFFFFF;
+  position:fixed;
+  width:100%;
+  height:100%;
+  left:0px;
+  top:0px;
+}
+
+
+.mainEvent {
+  width:100%;
+  height:100%;
+}
+
+.scriptEvent {
+  font-size:48pt;
+}
+
+.miniEvent {
+  width:100%;
+  height:100%;
+}
+
+.auxEvent {
+  width:100%;
+  height:100%;
+}
+
+.vexScore {
+  top:30%;
+  left:10%;
+}

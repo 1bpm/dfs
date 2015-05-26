@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>Dynamic Forte Score 1.0</title>
+    <link rel="stylesheet" href="/assets/css/bootstrap.css" type="text/css" />
+    <link rel="stylesheet" href="/assets/css/dfs.css" type="text/css" />
+    <link rel="stylesheet" href="/assets/css/vexTab.css" type="text/css" />
+    <script data-main="/assets/js/dfs/boot.js" src="/assets/js/require.js"></script>
+</head>
+<div>
+
+    <div id="fatal" class="fullScreen">
+        <div class="jumboTron container">
+            <h1 id="fatalLabel">Initialising</h1><hr>
+            <div class="alert alert-danger" id="fatalText">
+                <span class="glyphicon glyphicon-off"></span>&nbsp;&nbsp;
+                Please wait a second while the application initialises.
+                If this message remains, check your browser's javascript configuration.</div>.
+        </div>
+    </div>
+
+    <div id="notificationArea">
+        <div id="notification" class="alert"></div>
+    </div>
+
+    <div id="greeting" class="fullScreen">
+        <div id="login" class="jumboTron container">
+            <h1 id="greetingTitle">Dynamic Forte Score</h1><hr>
+            <div class="row">
+                    <h3>Enter a name <small>to join the current session</small></h3>
+                    <div class="input-group">
+                        <input id="username" type="text" class="form-control" placeholder="name...">
+                        <input id="password" type="password" class="form-control" placeholder="password...">
+                        <span class="input-group-btn">
+                            <button id="loginButton" class="btn btn-primary" type="button">
+                                <span class="glyphicon glyphicon-log-in"></span> Join
+                            </button>
+                        </span>
+                    </div>
+            </div>
+
+            <div class="row anonymousObserver">
+                <hr><br>
+                <h3>Observe <small id="performanceName"> the current performance</small></h3>
+                <p>Watch the progression of events across all performers</p></div>
+                <br>
+                <button id="observeButton" class="anonymousObserver btn btn-default">
+                    <span class="glyphicon glyphicon glyphicon-eye-open"></span> Observe
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="loading" class="fullScreen">
+        <div id="loadingInner" class="jumboTron container">
+            <h1 id="loadingTitle">connecting to server</h1><hr>
+            <div class="alert alert-info" id="loadingText"></div>
+        </div>
+    </div>
+
+
+    <div id="performerMenu">
+        <div class="btn-group dropup">
+            <button id="performerName" class="btn btn-default" data-toggle="performerConfigMenu">Performer</button>
+            <button  class="btn btn-default dropdown-toggle" data-toggle="performerConfigMenu">
+                <span class="caret"></span>
+                <span class="sr-only">Toggle dropdown</span>
+            </button>
+            <ul id="performerConfigMenu" class="dropdown-menu" role="menu">
+                <li><a id="quitButton" href="#">
+                    <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>Quit</a></li>
+                <li><a id="aboutDfs" href="#">
+                    <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>Help</a></li>
+                <li class="divider"></li>
+                <li class="superuser"><a id="createPerformance" href="#">
+                    <span class="glyphicon glyphicon-file" aria-hidden="true"></span>Create performance</a>
+                </li>
+                <li class="superuser"><a id="beginPerformanceButton" href="#">
+                    <span class="glyphicon glyphicon-play-circle" aria-hidden="true"></span>Begin performance</a>
+                </li>
+                <li class="superuser"><a id="clearPerformanceButton" href="#">
+                    <span class="glyphicon glyphicon-remove-circle" aria-hidden="true"></span>Clear performance</a>
+                </li>
+                <li class="performanceReady"><a id="eventInspectorButton" href="#">
+                    <span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span>Event inspector</a>
+                </li>
+                <li class="performanceReady"><a id="eventOverviewButton" href="#">
+                    <span class="glyphicon glyphicon-blackboard" aria-hidden="true"></span>Event overview</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+
+    <div id="performer">
+        <div id="performerPrepare">
+            <div class="container">
+                <h2 id="prepareHeader"><small id="prepareHeaderSmall"></small></h2>
+                <div class="row alert alert-danger" id="prepareReady">
+                    The performance is due to start imminently. Please get ready
+                </div>
+                <div class="row alert alert-success" id="prepareNormal">
+                    Please prepare for the performance to begin while other performers join
+                </div>
+                <div class="progress row" >
+                    <div id="prepareCount" class="progress-bar progress-bar-danger" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width:0%">
+                        <span class="sr-only"></span>
+                    </div>
+                </div>
+                <div id="preAmble" class="row"></div>
+                <div class="row">
+                    <button id="prepareCancel" class="btn btn-danger">
+                        <span class="glyphicon glyphicon-remove"></span>&nbsp;&nbsp;Retract involvement
+                    </button>
+                </div>
+
+            </div>
+            <hr/>
+        </div>
+        <div id="performanceControl" class="container superuser">
+            <div class="row">
+                <div class="col-xs-6">
+                    <div class="input-group">
+                        <input id="performanceCountIn" type="range" class="form-control" min="1" max="10" value="5" aria-describedby="basic-addon2">
+                        <span class="input-group-addon" id="basic-addon2"><p id="performanceCountInTime">5</p> seconds preparation</span>
+                    </div>
+                </div>
+                <div class="col-xs-6">
+                    <button id="performanceStart" class="btn btn-success">
+                        <span class="glyphicon glyphicon-play"></span>&nbsp;&nbsp;Begin performance
+                    </button>
+                </div>
+            </div>
+            <hr/>
+
+        </div>
+
+        <div id="performerChoice" class="container">
+
+
+
+            <div id="performanceMeta"></div>
+            <div id="performanceRoles"></div>
+            <div id="performanceList" class="superuser"></div>
+
+
+        </div>
+    </div>
+
+    <div id="editor" class="fullScreen superuser">
+        <!-- tabs -->
+        <div id="editorOverview">
+            <div class="input-group">
+                <span class="input-group-addon1">Title</span>
+                <input id="editTitle" type="text" class="form-control" placeholder="My DFS composition" aria-describedby="basic-addon1">
+            </div>
+            <div class="input-group">
+                <span class="input-group-addon1">Composer</span>
+                <input id="editComposer" type="text" class="form-control" placeholder="My name" aria-describedby="basic-addon1">
+            </div>
+            <div class="input-group">
+                <span class="input-group-addon1">Clef</span>
+                <input id="editClef" type="text" class="form-control" placeholder="Arbitrary clef" aria-describedby="basic-addon1">
+            </div>
+            <div class="input-group">
+                <span class="input-group-addon1">Duration</span>
+                <input id="editDuration" type="text" class="form-control" placeholder="Composition duration" aria-describedby="basic-addon1">
+            </div>
+        </div>
+
+        <div id="editorCode">
+            <button id="saveEditor" class="btn btn-default">
+                <span class="glyphicon glyphicon-save" aria-hidden="true"></span>Save</button>
+            <textarea id="codeMirror"></textarea>
+        </div>
+        <div id="editorAssets"></div>
+        <div id="editorBlocks"></div>
+    </div>
+
+    <div id="overview" class="fullScreen">
+        <div id="inspector">
+            <div id="inspectorDetail"></div>
+            <div id="inspectorProgress"></div>
+        </div>
+        <table id="eventOverview"></table>
+    </div>
+
+    <div id="modal" class="modal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="modalTitle">are you sure?</h4>
+                </div>
+                <div class="modal-body">
+                    <p id="modalText">this operation is not reversible</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" id="modalNo" class="btn btn-default" data-dismiss="modal">No</button>
+                    <button type="button" id="modalYes" class="btn btn-primary">Yes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="performance" class="fullScreen">
+        <div id="mainDisplay"></div>
+        <div id="miniDisplay"><div id="miniDisplayInner"></div></div>
+        <div id="counterDisplay"></div>
+        <div id="progressContainer"><div id="performanceProgressBar"></div></div>
+        <div id="auxDisplay"></div>
+    </div>
+
+    </body>
+</html>
+

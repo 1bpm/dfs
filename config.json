@@ -1,0 +1,9 @@
+{
+    "debug": true,
+
+    "serverPort" : 1337,
+    "sendLogToServer": true,
+
+    "adminUser":"admin",
+    "adminPassword":"password"
+}
