@@ -48,7 +48,7 @@ var Role=function(objData) {
             self.events[request.id]=new Event(request.eventData);
         },
         runEvent:function(request) {
-            self.runEvent(request.id,request.mini,request.duration);
+            self.runEvent(request);
         },
 
         performanceStart:function(request) {
@@ -58,12 +58,14 @@ var Role=function(objData) {
 
     };
 
-    this.runEvent=function(id,miniId,duration) {
-        if (!self.events[id]) {
-            dfs.log.warn("event does not exist in cache "+id);
+
+    this.runEvent=function(request) {
+        console.log(request);
+        if (!self.events[request.id]) {
+            dfs.log.warn("event does not exist in cache "+request.id);
         } else {
             setTimeout(function(){
-                dfs.emit("eventAcknowledged",{id:id});
+                dfs.emit("eventAcknowledged",{id:request.id,tid:request.tid});
             },0);
 
             view.id("performanceProgressBar").stop();
@@ -74,18 +76,18 @@ var Role=function(objData) {
                 delete self.currentEvent;
             }
 
-            if (self.events[id]) {
-                self.currentEvent = self.events[id].main;
+            if (self.events[request.id]) {
+                self.currentEvent = self.events[request.id].main;
                 //console.log(self.currentEvent);
-                if (miniId) {
-                    self.events[id].main.miniEvent = self.events[miniId].mini;
+                if (request.mini) {
+                    self.events[request.id].main.miniEvent = self.events[request.mini].mini;
                 }
 
-                self.events[id].main.run(function () {
-                    dfs.emit("eventComplete", {id: id});
-                }, duration);
+                self.events[request.id].main.run(function () {
+                    dfs.emit("eventComplete", {id: request.id,tid:request.tid});
+                }, request.duration-10);
             } else {
-                dfs.log.warn("event could not be run: "+id);
+                dfs.log.warn("event could not be run: "+request.id);
             }
         }
     };

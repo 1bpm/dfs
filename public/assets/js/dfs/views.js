@@ -90,12 +90,24 @@ var view={
                 if (dfs.superuser) {
                     view.id("performanceControl").show();
                 }
-                dfs.role=new Role(data);
-                if (data.styles) {
+                //dfs.role=new Role(data);
+                dfs.events={};
+                for (var evName in data.events) {
+                    var item=data.events[evName];
+                    try {
+                        console.log("create event "+evName);
+                        dfs.events[evName]=new Event(item);
+                    } catch (error) {
+                        dfs.log.warn("error creating event "+evName+": "+error);
+                    }
+                }
+
+
+                if (data.performance.styles) {
                     $("#performanceStyle").remove();
                     var css="";
-                    for (var style in data.styles) {
-                        css+=data.styles[style];
+                    for (var style in data.performance.styles) {
+                        css+=data.performance.styles[style];
                     }
                     var cssStyle = $('<style type="text/css" id="performanceStyle">'+css+'</style>');
                     $("head").append(cssStyle);
@@ -106,12 +118,12 @@ var view={
                 } else {
                     view.id("roleChoicePrompt").hide();
                 }
-                var title=dfs.performance.meta.composer+": "+dfs.performance.meta.title;
-                view.id("preAmble").html(data.preAmble);
+                var title=data.performance.composer+": "+data.performance.title;
+                view.id("preAmble").html(data.role.preamble);
                 view.id("prepareHeader").text(title+"  ");
                 view.id("prepareHeaderSmall").text(" preparing");
                 //view.state("loading",{title:title,text:"Please prepare for performance"});
-                view.id("prepareCancel").click(function(){
+                view.id("prepareCancel").show().click(function(){
                     view.state("quitRole");
                     dfs.emit("quitRole");
                 });
@@ -143,8 +155,9 @@ var view={
                 } else {
                     view.cls("anonymousObserver").hide();
                 }
-                var theName=view.id("username").val();
+                
                 view.id("loginButton").unbind().click(function(){
+                    var theName=view.id("username").val();
                     if (theName===dfs.config.adminUser) {
                         view.state("superuserLogin");
                     } else {
@@ -192,13 +205,18 @@ var view={
                             class:"container"
                         }).append($("<div />",{
                             class:"row"
-                        }).html("<h3>"+data.meta.composer+": "+
-                            data.meta.title+"</h3>")
+                        }).html("<h3>"+data.title+"&nbsp;&nbsp;&nbsp;<small>"+
+                            data.composer+"</small></h3>")
                         );
+                        if (dfs.superuser && data.time) {
+                            info.append($("<div />",{
+                                class:"row"
+                            }).text("Runtime forecast: "+data.time/1000+"s")).append($("<div />",{
+                                class:"row"
+                            }));
+                        }
                         for (var metaKey in data.meta) {
                             var meta=data.meta[metaKey];
-                            if (metaKey!="composer" &&
-                                    metaKey!="title") {
                                 var row=$("<div />",{
                                     class:"row"
                                 });
@@ -208,7 +226,7 @@ var view={
                                 var val=key.clone().html("<b>"+meta+"</b>");
                                 row.append(key).append(val);
                                 info.append(row);
-                            }
+                            
                         }
                     }
                     if (data.intro) {
@@ -233,12 +251,22 @@ var view={
                 var statusPrompt="Please select a role from the list below to take part in the performance"
                 for (var key in data) {
                     var item=data[key];
-                    var id=item.id;
+                    var id=item.name;
                     tbl.Name.push("<h3>"+item.name+"<h3>");
                     var info="";
                     var show=["clef","instrument","key"];
+                    
+                    // show additional fields for superuser
+                    if (dfs.superuser) {
+                        show.push("totalEvents");
+                        show.push("performanceTime");
+                    }
                     for (var iKey in show) {
-                        info+=show[iKey]+": <b>"+item[show[iKey]]+"</b><br>";
+                        var val=item[show[iKey]];
+                        if (show[iKey]==="performanceTime") {
+                            val=item[show[iKey]]/1000+"s";                    
+                        }
+                        if (item[show[iKey]]) info+=show[iKey]+": <b>"+val+"</b><br>";
                     }
                     tbl.Information.push(info+"<hr />");
                     var assigned;
@@ -247,27 +275,26 @@ var view={
                         class:"btn-group"
                     });
 
+
+                    // allow it to be chosen if assigned, and kicked if assigned and ur superuser
                     if (item.assignable) {
                         actions.append($("<button />",{
                             class:"btn btn-default",
-                            dfsid:id
+                            dfsid:item.name
                         }).text("Select").click(function(){
-                            dfs.emit("selectRole",{id:$(this).attr("dfsid")});
+                            dfs.emit("selectRole",{name:$(this).attr("dfsid")});
                         }));
                     } else {
 
-                    }
-
-                    if (item.clients) {
+                    // not assignable
+                }
+                    if (Object.keys(item.roleMembers).length>0) {
                         assigned="";
-                        for (var cKey in item.clients) {
-                            var client=item.clients[cKey];
-                            assigned+="name: "+client.name;
+                        for (var cKey in item.roleMembers) {
+                            var performer=item.roleMembers[cKey];
+                            assigned+="name: "+performer.name;
                             if (dfs.superuser) {
-                                assigned+="<br>ip: "+client.ip;
-
-
-
+                                assigned+="<br>ip: "+performer.ip;
                             }
                             assigned+="<hr />";
                         }
@@ -282,16 +309,13 @@ var view={
                                 });
                             }));
                         }
+                    
 
                     } else {
-                        assigned="No performer";
+                        assigned="Not assigned";
                     }
+                
                     tbl.Assigned.push(assigned);
-
-
-
-
-
                     tbl.Action.push(actions);
                 }
 

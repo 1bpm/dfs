@@ -1,6 +1,7 @@
 {
     "debug": true,
 
+    "listenAddress":"127.0.0.1",
     "serverPort" : 1337,
     "sendLogToServer": true,
 

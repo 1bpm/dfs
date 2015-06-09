@@ -100,7 +100,7 @@
   height:100%;
   transform:scale(0.5);
   -moz-transform:scale(0.5);
-  zoom : 0.5;
+  /**zoom : 0.5; */
   -webkit-transform:scale(0.5);
   -ms-transform:scale(0.5);
 }
@@ -163,6 +163,14 @@
   top:0px;
 }
 
+.textDisplayEvent {
+    top:50%;
+    left:0px;
+    width:100%;
+    position:absolute;
+    text-align: center;
+    font-size:24pt;
+}
 
 .mainEvent {
   width:100%;

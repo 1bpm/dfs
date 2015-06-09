@@ -48,6 +48,23 @@ var dfs={
         view.state("init");
     },
     routes:{
+        eventCache:function(request) {
+            for (var evName in request.events) {
+                    var item=request.events[evName];
+                    try {
+                        console.log("try cache "+evName);
+                        //if (!dfs.events[evName])
+                        if (dfs.events[evName] && dfs.events[evName].getDiv) {
+                            dfs.events[evName].getDiv().remove();
+                            delete dfs.events[evName];
+                        }
+                        dfs.events[evName]=new Event(item);
+                    } catch (error) {
+                        dfs.log.warn("error creating event "+evName+": "+error);
+                    }
+                }
+        },
+
         su:function(request){
             if (dfs.superuser && request.su) {
                 dfs.superuser.routing(request.su)
@@ -114,9 +131,48 @@ var dfs={
                 dfs.log.warn(output);
             }
             dfs.emit("cache", {cacheID:request.id,result: output});
+        },
+        runEvent:function(request) {
+            dfs.runEvent(request.id,request.mini,request.duration,request.tid);
+        },
+        performanceStart:function(request) {
+            view.state("performanceStart",{countIn:request.countIn});
+            dfs.emit("performanceStart",{acknowledged:true});
         }
 
 
+    },
+
+    runEvent:function(id,miniId,duration,tid) {
+        if (!dfs.events[id]) {
+            dfs.log.warn("event does not exist in cache "+id);
+        } else {
+            setTimeout(function(){
+                dfs.emit("eventAcknowledged",{id:id,tid:tid});
+            },0);
+
+            view.id("performanceProgressBar").stop();
+            view.id("performanceProgressBar").css("width","0%");
+
+            if (dfs.currentEvent) {
+                if (dfs.currentEvent.stop) dfs.currentEvent.stop();
+                delete dfs.currentEvent;
+            }
+
+            if (dfs.events[id]) {
+                dfs.currentEvent = dfs.events[id].main;
+                //console.log(self.currentEvent);
+                if (miniId) {
+                    dfs.events[id].main.miniEvent = dfs.events[miniId].mini;
+                }
+
+                dfs.events[id].main.run(function () {
+                    dfs.emit("eventComplete", {id: id,tid:tid});
+                }, duration);
+            } else {
+                dfs.log.warn("event could not be run: "+id);
+            }
+        }
     },
     log:{
         _write:function(level,text) {

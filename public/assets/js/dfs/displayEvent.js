@@ -4,12 +4,12 @@ var Event=function(inData) {
             this.data=data;
             this.html=function() {
                 var ht="<div class='textDisplayEvent'";
-                if (data.style) {
-                    ht=ht.concat("style='"+data.style+"'>");
+                if (data.class) {
+                    ht=ht.concat(" class='"+data.class+"'>");
                 } else {
                     ht=ht.concat(">");
                 }
-                ht=ht.concat(data.innerValue + "</div>");
+                ht=ht.concat(data.content + "</div>");
                 return ht;
             };
         },
@@ -17,9 +17,11 @@ var Event=function(inData) {
             this.data=data;
 
             this.html=function() {
-                var ht='<div style="margin-left:auto;background-position:center;margin-right:auto;width:100%;height:100%;background-repeat:no-repeat;background-image:url(\''+data.innerValue+'\')"';
-                if (data.style) {
-                    ht=ht.concat(" style='"+data.style+"'>");
+                var ht='<div style="margin-left:auto;background-position:center;'+
+                        'margin-right:auto;width:100%;height:100%;background-repeat:no-repeat;'+
+                        'background-image:url(\'/assets/performance/'+data.content+'\')"';
+                if (data.class) {
+                    ht=ht.concat(" class='"+data.class+"'>");
                 } else {
                     ht=ht.concat(">");
                 }
@@ -30,19 +32,19 @@ var Event=function(inData) {
         html:function(data) {
             this.data=data;
             this.html=function() {
-                return data.html;
+                return data.content;
             };
         },
         script:function(data) {
             this.data=data;
 
             this.getScript=function() {
-                var scriptRun="var context=$('#innerScript"+data.displayArea+data.id+"'); "+data.innerValue;
+                var scriptRun="var context=$('#innerScript"+data.displayArea+data.name+"'); "+data.content;
                 return scriptRun;
             };
 
             this.html=function() {
-                return '<div class="scriptEvent" id="innerScript'+data.displayArea+data.id+'"></div>';
+                return '<div class="scriptEvent" id="innerScript'+data.displayArea+data.name+'"></div>';
             };
 
         },
@@ -51,12 +53,11 @@ var Event=function(inData) {
             var tabdiv;
             this.html=function() {
                 //var htVal='<canvas id="scEv'+data.id+'"></canvas>';
-                var htVal='<div width="800" height="768" scale="1" id="scEv'+data.displayArea+data.id+'" class="vexScore vex-tabdiv">'+data.innerValue+'</div>';
+                var htVal='<div width="800" height="768" scale="1" id="scEv'+data.displayArea+data.name+'" class="vexScore vex-tabdiv">'+data.content+'</div>';
                 return htVal;
             };
             this.preScript=function(context) {
-                console.log("score prescript "+data.displayArea+data.id);
-                tabdiv=Vex.Flow.TabDiv.prototype.init("#scEv"+data.displayArea+data.id);
+                tabdiv=Vex.Flow.TabDiv.prototype.init("#scEv"+data.displayArea+data.name);
             };
         },
         canvas:function(data) {
@@ -72,7 +73,7 @@ var Event=function(inData) {
     var BaseDisplayEvent=function(theEvent) {
         var self=this;
         this.event=theEvent.data;
-        this.id=self.event.id;
+        this.id=self.event.name;
         var runningFunction=null;
         var complete=false;
         this.ready=false;
@@ -115,7 +116,7 @@ var Event=function(inData) {
             //},duration-5);
 
             //setTimeout(function() {
-
+            
             self.getDiv().show();
             self.runScript();
             if (self.miniEvent) {
@@ -154,6 +155,12 @@ var Event=function(inData) {
         };
 
         this.stop=function() {
+            if (self.runningFunction) {
+                clearTimeout(self.runningFunction);
+                delete self.runningFunction;
+
+            }
+            
             self.getDiv().hide();
             if (self.miniEvent) {
                 self.miniEvent.getDiv().hide();
@@ -161,11 +168,7 @@ var Event=function(inData) {
                 //self.miniEvent.stop();
             }
 
-            if (self.runningFunction) {
-                clearTimeout(self.runningFunction);
-                delete self.runningFunction;
-
-            }
+            
 
         };
 
@@ -206,8 +209,8 @@ var Event=function(inData) {
 
     var DisplayEvent=function(input,displayArea) {
         var base;
-        var evData=input.data;
-        evData.id=input.id;
+        var evData=input;//.data;
+        evData.name=input.name;
         //data.id="mini"+data.id;
         if (evData.type in displayEvents) {
             evData.displayArea=displayArea;
@@ -224,8 +227,8 @@ var Event=function(inData) {
 
 
     return {
-        main:new DisplayEvent(JSON.parse(JSON.stringify(inData)),"mini"),
-        mini:new DisplayEvent(inData,"main")
+        mini:new DisplayEvent(JSON.parse(JSON.stringify(inData)),"mini"),
+        main:new DisplayEvent(inData,"main")
     };
 };
 

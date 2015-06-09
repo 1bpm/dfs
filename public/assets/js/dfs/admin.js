@@ -32,7 +32,7 @@ var Admin=function() {
         objectState: function (data) {
             view.sure(function () {
                 }, "Server state",
-                data.dfs, true);
+                "<textarea style='width:100%;height:200px'>"+data.dfs+"</textarea>", true);
         }
     };
 
