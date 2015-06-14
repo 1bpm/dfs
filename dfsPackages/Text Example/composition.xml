@@ -1,16 +1,16 @@
 <dfs>
     <init>
-        <script>
+        <script type="text/javascript">
             
-            
+        // set the composition details
+            // duration is important as it permits the use of performance.running later 
         new Performance({
             composer:"Richard Knight",
             title:"Hello Text",
             duration:60000,
             introductionText:"This is an example of randomly generated text events. The text cues are taken from Rodrigo Constanzo's 'Demo Video'"
         });
-            // set the composition details
-            // duration is important as it permits the use of performance.running later
+            
         
         
         // create three roles with automatic names (ie Role 1, Role 2, etc)
