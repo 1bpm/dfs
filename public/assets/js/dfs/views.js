@@ -90,8 +90,10 @@ var view={
                 if (dfs.superuser) {
                     view.id("performanceControl").show();
                 }
+                dfs.roleAssigned=true;
                 //dfs.role=new Role(data);
                 dfs.events={};
+                dfs.eventTotal=data.role.totalEvents;
                 for (var evName in data.events) {
                     var item=data.events[evName];
                     try {
@@ -115,7 +117,9 @@ var view={
                 view.id("performanceMeta").hide();
                 if (!dfs.superuser) {
                     view.id("performanceRoles").hide();
-                } else {
+                } else if (data.roles) {
+                    data.roles.noPrompt=true;
+                    view.state("performanceRoles",data.roles);
                     view.id("roleChoicePrompt").hide();
                 }
                 var title=data.performance.composer+": "+data.performance.title;
@@ -185,8 +189,8 @@ var view={
             }
         },
         performanceAvailable:{
-            show:["performer"],
-            hide:["loading","greeting","performerPrepare","performanceList"],
+            show:["performer","performerChoice"],
+            hide:["loading","greeting","performanceList"],
             run:function(data){
                 if (dfs.superuser) {
                     view.id("performanceControl").show();
@@ -198,7 +202,13 @@ var view={
                     view.id("performanceCountIn").unbind().change(function(){
                         view.id("performanceCountInTime").text(view.id("performanceCountIn").val());
                     });
+                } else if (dfs.roleAssigned) {
+                    view.id("performerChoice").hide();
+                    return;
                 }
+                view.id("performerPrepare").hide();
+
+                
                     dfs.performance.meta=data.meta;
                     if (data.meta) {
                         var info=$("<div />",{
@@ -248,7 +258,8 @@ var view={
             run:function(data){
                 var tbl={Name:[],Information:[],Assigned:[],Action:[]};
                 console.log(data);
-                var statusPrompt="Please select a role from the list below to take part in the performance"
+                var statusPrompt="";
+                if (!data.noPrompt) statusPrompt="Please select a role from the list below to take part in the performance"
                 for (var key in data) {
                     var item=data[key];
                     var id=item.name;
@@ -277,7 +288,7 @@ var view={
 
 
                     // allow it to be chosen if assigned, and kicked if assigned and ur superuser
-                    if (item.assignable) {
+                    if (item.assignable && !dfs.roleAssigned) {
                         actions.append($("<button />",{
                             class:"btn btn-default",
                             dfsid:item.name
@@ -298,17 +309,17 @@ var view={
                             }
                             assigned+="<hr />";
                         }
-
-                        if (dfs.superuser) {
-                            actions.append($("<button />",{
-                                class:"btn btn-danger",
-                                dfsid:id
-                            }).text("Kick").click(function(){
-                                dfs.superuser.emit("kick",{id:
-                                    $(this).attr("dfsid")
-                                });
-                            }));
-                        }
+//kick button
+//                        if (dfs.superuser) {
+//                            actions.append($("<button />",{
+//                                class:"btn btn-danger",
+//                                dfsid:id
+//                            }).text("Kick").click(function(){
+//                                dfs.superuser.emit("kick",{id:
+//                                    $(this).attr("dfsid")
+//                                });
+//                            }));
+//                        }
                     
 
                     } else {
@@ -351,7 +362,7 @@ var view={
 
         suListPackages: {
             show: ["performer","performanceList","performerChoice"],
-            hide: ["performance","performanceRoles","performanceControl","performerPrepare","greeting","loading"],
+            hide: ["performanceMeta","performance","performanceRoles","performanceControl","performerPrepare","greeting","loading"],
             run: function (request) {
                 var packages = request.packages;
                 for (var i in packages.Title) {

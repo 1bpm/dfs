@@ -1,10 +1,9 @@
 {
-    "debug": true,
+    "listenAddress" : "127.0.0.1",
+    "serverPort" : 8080,
 
-    "listenAddress":"127.0.0.1",
-    "serverPort" : 1337,
-    "sendLogToServer": true,
-
-    "adminUser":"admin",
-    "adminPassword":"password"
+    "adminUser" : "admin",
+    "adminPassword" : "password",
+    
+    "debug": false
 }

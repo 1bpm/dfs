@@ -52,6 +52,7 @@ var Role=function(objData) {
         },
 
         performanceStart:function(request) {
+            if (!dfs.roleAssigned) return;
             view.state("performanceStart",{countIn:request.countIn});
             dfs.emit("performanceStart",{acknowledged:true});
         }

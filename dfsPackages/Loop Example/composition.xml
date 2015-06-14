@@ -1,0 +1,62 @@
+<dfs>
+    <init>
+        <script>
+            
+        // set the composition details
+        new Performance({
+            composer:"dfscore",
+            title:"Loop Example",
+            duration:60000,
+            introductionText:"This is an example of randomly generated text events"
+        });
+            
+        // duration is important as it permits the use of performance.running later
+        
+        
+        // create two roles with specific names
+        new Role("Bass");
+        new Role("Rhythm");
+            
+            
+            
+            
+            
+        new ScoreEvent("score1","stave\n"+
+                "notation=true\n"+
+                "key=C time=7/8\n"+
+                "notes :8 5/2 :q 7/3 1/2 9/4  |\n"+
+                "notes :q 9/4 1/2 7/3 :8 5/2  |");   
+            
+        new TextEvent("ht1","Another text event");
+            
+        </script>
+    </init>
+    
+    <score>
+        <script>
+        
+        // loop from 1 to 10 using x and the current number
+        for (var x=1 ; x<11 ; x++) {
+        
+            // rhythm plays x number hits in 6s
+            roles.Rhythm.perform(
+                new TextEvent("tr"+x,"Play " + x + " hits"),
+                6000
+            );
+            
+            
+            // bass plays 10-x number of hits in 3s
+                // (the reverse of what Rhythm is doing)
+            roles.Bass.perform(
+                new TextEvent("t"+x,"Play " + (10-x) + " notes"),
+                3000
+            )
+            
+            
+            
+        }  // resulting in Bass playing an event every 3s and rhythm every 6s
+        
+          
+        </script> 
+    </score>
+</dfs>

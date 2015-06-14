@@ -1,0 +1,38 @@
+<dfs>
+    <init>
+    <script>
+        
+        // set up the performance
+        new Performance({
+            composer: "dfscore",
+            title: "Hello Image",
+            introductionText: "This is a simple introduction to using images",
+        });
+        
+        // create two roles
+        new Role("Primary");
+        new Role("Secondary");
+    
+        // three events 
+        new ImageEvent("i1", "img1.jpg");
+        new ImageEvent("i2", "img2.jpg");
+        new ImageEvent("i3", "img3.jpg");
+    </script>
+    </init>
+    <score>
+        <script>
+            
+            // Primary role plays the same event at the start every time             
+            roles.Primary.perform("i1", 3000);
+            
+            // then all roles perform a three random events
+            roles.perform(dftool.rand(events), 4000);
+            roles.perform(dftool.rand(events), 5000);
+            roles.perform(dftool.rand(events), 3000);
+            
+            // resulting in Primary having 4 events and Secondary having 3
+
+        </script>
+    </score>
+</dfs>
+

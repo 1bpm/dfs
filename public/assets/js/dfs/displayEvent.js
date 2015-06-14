@@ -28,6 +28,12 @@ var Event=function(inData) {
                 ht=ht.concat("</div>");
                 return ht;
             };
+            this.preScript=function(context){
+                view.id("performance").show();
+                context.show();
+                context.hide();
+                view.id("performance").hide();
+            };
         },
         html:function(data) {
             this.data=data;
@@ -191,8 +197,13 @@ var Event=function(inData) {
                     default:
                         displayArea = "#mainDisplay";
                 }
-                $(displayArea).append('<div class="' + dispArea
-                    + 'Event" id="event' + dispArea + self.id + '">' + theEvent.html() + '</div>');
+                $(displayArea).append($("<div />",{
+                    class:dispArea+"Event event",
+                    id:"event"+dispArea+self.id
+                }).html(theEvent.html()));
+
+                //    '<div class="' + dispArea
+                 //   + 'Event" id="event' + dispArea + self.id + '">' + theEvent.html() + '</div>');
 
                 self.div = "#event" + dispArea + self.id;
                 self.stop();

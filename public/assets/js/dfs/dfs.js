@@ -53,10 +53,9 @@ var dfs={
                     var item=request.events[evName];
                     try {
                         console.log("try cache "+evName);
-                        //if (!dfs.events[evName])
-                        if (dfs.events[evName] && dfs.events[evName].getDiv) {
-                            dfs.events[evName].getDiv().remove();
-                            delete dfs.events[evName];
+                        if (dfs.events[evName]) {
+                            dfs.events[evName].main.getDiv().remove();
+                            dfs.events[evName].mini.getDiv().remove();
                         }
                         dfs.events[evName]=new Event(item);
                     } catch (error) {
@@ -97,10 +96,23 @@ var dfs={
                 dfs.role.routing(request.role);
             }
         },
+        performanceComplete:function(request){
+            dfs.roleAssigned=false;
+            dfs.role=null;
+            dfs.events={};
+            dfs.eventNum=0,dfs.eventTotal=0;
+            view.id("mainDisplay").empty();
+            view.id("counterDisplay").text("");
+            view.id("miniDisplayInner").empty();
+            view.id("prepareCount").css({
+                width:"0%"
+            });
+        },
         performanceAvailable:function(request){
             if (request.view==="login") {
                 view.id("anonymousObserver").show();
-            } else if (!dfs.role || dfs.superuser) {
+            } else if (!dfs.roleAssigned || dfs.superuser) {
+                dfs.roleAssigned=true;
                 view.state("performanceAvailable",request);
             }
         },
@@ -136,6 +148,7 @@ var dfs={
             dfs.runEvent(request.id,request.mini,request.duration,request.tid);
         },
         performanceStart:function(request) {
+            dfs.eventNum=0;
             view.state("performanceStart",{countIn:request.countIn});
             dfs.emit("performanceStart",{acknowledged:true});
         }
@@ -150,7 +163,8 @@ var dfs={
             setTimeout(function(){
                 dfs.emit("eventAcknowledged",{id:id,tid:tid});
             },0);
-
+            dfs.eventNum++;
+            if (dfs.eventNum<=dfs.eventTotal) view.id("counterDisplay").text(dfs.eventNum+"/"+dfs.eventTotal);
             view.id("performanceProgressBar").stop();
             view.id("performanceProgressBar").css("width","0%");
 
@@ -188,7 +202,7 @@ var dfs={
         },
         debug:function(text) {
             console.log("debug: "+text);
-            this._write("debug",text);
+            if (dfs.config.debug) this._write("debug",text);
         },
         notify:function(text) {
             console.log(text);

@@ -100,7 +100,7 @@
   height:100%;
   transform:scale(0.5);
   -moz-transform:scale(0.5);
-  /**zoom : 0.5; */
+  zoom : 0.5;
   -webkit-transform:scale(0.5);
   -ms-transform:scale(0.5);
 }
@@ -161,6 +161,10 @@
   height:100%;
   left:0px;
   top:0px;
+}
+
+event {
+  display:none;
 }
 
 .textDisplayEvent {
