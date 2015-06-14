@@ -1,9 +1,9 @@
 <dfs>
     <init>
-        <script type="text/javascript">
+        <script>
             
         // set the composition details
-            // duration is important as it permits the use of performance.running later 
+        // duration is important as it permits the use of performance.running later 
         new Performance({
             composer:"Richard Knight",
             title:"Hello Text",
