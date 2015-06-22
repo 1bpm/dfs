@@ -16,7 +16,6 @@
 
     // one more role, allowing 4 individuals who will receive the same instructions
     new Role("Unison",{maxPerformers:4});           
-    
 
     var words=[         /* a variable for an [array] containing words
                                             from Rodrigo Constanzo's 'Demo Video' */
@@ -64,4 +63,3 @@ while (performance.running){
     // this perform instruction is repeated individually for each performer until
             // the performance duration is reached
 }
-</dfscore>
