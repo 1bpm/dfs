@@ -1,0 +1,70 @@
+<dfscore>
+    
+    new Performance({               // set up the performance
+        composer: "dfscore",        
+        title: "Tempo",
+        duration: 60000,            // in ms
+        throb: true,                // throb the main display of all events
+        introductionText: "This is an introduction to using dynamic tempo cues. Given that the tempos of an event and the next are given, dfscore will dynamically interpolate between them, in time for the throbbing of the preview display.",
+    });
+
+    
+    new Role("Primary");            // create 
+    new Role("Secondary");          // two roles
+    
+    // using the global() function to have sync'd variables between roles
+        // in this case setting a global default random time for every event
+    var time=global("gRand",dftool.rand(10000,15000));
+    
+    
+    // perform grouped events for the two roles with a tempo specified
+    perform("Primary",      
+            new TextEvent("Atonal hits (120bpm) for "+time,{tempo:120})
+            , time);
+    perform("Secondary",
+            new TextEvent("Tonal hits (60bpm) for "+time,{tempo:60})
+            , time);
+
+
+    perform("Primary",
+            new TextEvent("Tonal hits (60bpm) for "+time,{tempo:60})
+            , time);
+    perform("Secondary",
+            new TextEvent("Atonal hits (120bpm) for "+time,{tempo:120})
+            , time);
+
+
+    perform("Primary",
+            new TextEvent("Tonal hits (60bpm) for "+time,{tempo:60})
+            , time);
+    perform("Secondary",
+            new TextEvent("Atonal hits (60bpm) for "+time,{tempo:60})
+            , time);
+
+
+
+    // make a stack more events
+    
+    var tempos=[150,70,110,135,160,50,100];
+    for (var t in tempos) {
+        var tempo=tempos[t];
+        perform("Primary",
+                new TextEvent("Melody at "+tempo+" for "+time,{tempo:tempo}),
+                time
+               );
+               
+        perform("Secondary",
+                new TextEvent("Rhythm at "+tempo+" for "+time,{tempo:tempo}),
+                time
+               );
+    
+    }
+
+
+    
+    
+     
+
+    
+</dfscore>
+
