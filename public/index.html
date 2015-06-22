@@ -2,7 +2,7 @@
 <html>
 <head lang="en">
     <meta charset="UTF-8">
-    <title>Dynamic Forte Score 1.0</title>
+    <title>dfscore</title>
     <link rel="stylesheet" href="/assets/css/bootstrap.css" type="text/css" />
     <link rel="stylesheet" href="/assets/css/dfs.css" type="text/css" />
     <link rel="stylesheet" href="/assets/css/vexTab.css" type="text/css" />
@@ -26,7 +26,7 @@
 
     <div id="greeting" class="fullScreen">
         <div id="login" class="jumboTron container">
-            <h1 id="greetingTitle">Dynamic Forte Score</h1><hr>
+            <h1 id="greetingTitle">dfscore</h1><hr>
             <div class="row">
                     <h3>Enter a name <small>to join the current session</small></h3>
                     <div class="input-group">
@@ -59,8 +59,9 @@
         </div>
     </div>
 
-<!--
-    <div id="performerMenu">
+    <div id="observe"></div>
+
+    <div id="performerMenu" class="superuser">
         <div class="btn-group dropup">
             <button id="performerName" class="btn btn-default" data-toggle="performerConfigMenu">Performer</button>
             <button  class="btn btn-default dropdown-toggle" data-toggle="performerConfigMenu">
@@ -69,14 +70,14 @@
             </button>
             <ul id="performerConfigMenu" class="dropdown-menu" role="menu">
                 <li><a id="quitButton" href="#">
-                    <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>Quit</a></li>
+                    <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>End performance</a></li>
                 <li><a id="aboutDfs" href="#">
                     <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>Help</a></li>
                 <li class="divider"></li>
                 <li class="superuser"><a id="createPerformance" href="#">
-                    <span class="glyphicon glyphicon-file" aria-hidden="true"></span>Create performance</a>
+                    <span class="glyphicon glyphicon-file" aria-hidden="true"></span>See overview</a>
                 </li>
-                <li class="superuser"><a id="beginPerformanceButton" href="#">
+             <!--   <li class="superuser"><a id="beginPerformanceButton" href="#">
                     <span class="glyphicon glyphicon-play-circle" aria-hidden="true"></span>Begin performance</a>
                 </li>
                 <li class="superuser"><a id="clearPerformanceButton" href="#">
@@ -87,11 +88,11 @@
                 </li>
                 <li class="performanceReady"><a id="eventOverviewButton" href="#">
                     <span class="glyphicon glyphicon-blackboard" aria-hidden="true"></span>Event overview</a>
-                </li>
+                </li>-->
             </ul>
         </div>
     </div>
--->
+
 
     <div id="performer">
         <div id="performerPrepare">
@@ -137,14 +138,9 @@
         </div>
 
         <div id="performerChoice" class="container">
-
-
-
             <div id="performanceMeta"></div>
             <div id="performanceRoles"></div>
-            <div id="performanceList" class="superuser"></div>
-
-
+            <div id="performanceList" class="superuser container"></div>
         </div>
     </div>
 
@@ -205,8 +201,14 @@
     </div>
 
     <div id="performance" class="fullScreen">
-        <div id="mainDisplay"></div>
-        <div id="miniDisplay"><div id="miniDisplayInner"></div></div>
+        <div id="mainDisplay">
+            <div id="mainThrob"></div>
+        </div>
+        <div id="miniDisplay">
+            <div id="miniThrob"></div>
+            <div id="miniDisplayInner"></div>
+                
+        </div>
         <div id="counterDisplay"></div>
         <div id="progressContainer"><div id="performanceProgressBar"></div></div>
         <div id="auxDisplay"></div>

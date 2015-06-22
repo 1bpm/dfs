@@ -1,12 +1,12 @@
-var view={
-    id:function(id) {
-        return $("#"+id);
+var view = {
+    id: function (id) {
+        return $("#" + id);
     },
-    cls:function(cls) {
-        return $("."+cls);
+    cls: function (cls) {
+        return $("." + cls);
     },
-    currentState:null,
-    states:{
+    currentState: null,
+    states: {
         log: {
             show: ["notificationArea"],
             run: function (toLog) {
@@ -17,117 +17,124 @@ var view={
                     error: "alert-danger"
                 };
                 view.id("notificationArea").stop();
-                var nID=dfs.uid();
-                var notification=$("<div />",{
-                    class:"alert "+levels[toLog.level],
+                var nID = dfs.uid();
+                var notification = $("<div />", {
+                    class: "alert " + levels[toLog.level],
                     id: nID
                 });
                 notification.text(toLog.text);
                 view.id("notificationArea").append(notification);
-                $("#"+nID).fadeOut(4000);
+                $("#" + nID).fadeOut(4000);
                 setTimeout(function () {
-                    $("#"+nID).remove();
+                    $("#" + nID).remove();
                 }, 4000);
             }
         },
-        clearFatal:{
-            hide:["fatal"]
+        clearFatal: {
+            hide: ["fatal"]
         },
         fatal: {
             show: ["fatal"],
             hide: ["loading"],
             run: function (data) {
-                if (!data.title) data.title="Fatal error";
+                if (!data.title)
+                    data.title = "Fatal error";
                 view.id("fatalLabel").html(data.title);
-                if (data.icon) data.icon="user";
+                if (data.icon)
+                    data.icon = "user";
                 if (data.icon) {
-                    data.text=$("<span />",
-                                {
-                                    class:"glyphicon glyphicon-"+data.icon
-                                }).html()+"&nbsp;&nbsp; "+data.text;
+                    data.text = $("<span />",
+                            {
+                                class: "glyphicon glyphicon-" + data.icon
+                            }).html() + "&nbsp;&nbsp; " + data.text;
                 }
                 view.id("fatalText").html(data.text);
             }
         },
         init: {
             hide: ["fatal"],
-            run:function(){
-                view.state("loading",{
-                    title:"Connecting to server",
-                    text:"Please wait while a connection to the DFS server is established"
+            run: function () {
+                view.state("loading", {
+                    title: "Connecting to server",
+                    text: "Please wait while a connection to the DFS server is established"
                 });
             }
         },
-        performance:{
-            show:["performance"]
+        performance: {
+            show: ["performance"]
         },
         performanceStart: {
-            show:["performerPrepare","prepareReady"],
-            hide:["performanceControl","prepareCancel","performerChoice","prepareNormal"],
-            run:function(data) {
-                var duration=5000;
-                if (data.countIn) duration=data.countIn;
+            show: ["performerPrepare", "prepareReady"],
+            hide: ["performanceControl", "prepareCancel", "performerChoice", "prepareNormal"],
+            run: function (data) {
+                var duration = 5000;
+                if (data.countIn)
+                    duration = data.countIn;
                 view.id("prepareHeaderSmall").text(" beginning");
                 view.id("prepareCount").animate({
-                    width:"100%"
-                },duration,"linear",function() {
-                    view.state("performance");
+                    width: "100%"
+                }, duration, "linear", function () {
+                    if (dfs.roleAssigned) view.state("performance");
+                    if (!dfs.roleAssigned && dfs.superuser) {
+                        // monitor
+                    }
                 });
             }
         },
-        quitRole:{
-            hide:["prepareReady","performance"],
-            run:function(){
-                dfs.role=null;
+        quitRole: {
+            hide: ["prepareReady", "performance"],
+            run: function () {
+                dfs.role = null;
                 view.id("mainDisplay").empty();
                 view.id("miniDisplayInner").empty();
             }
         },
         performanceReady: {
-            show:["performer","prepareCancel","performerPrepare","prepareNormal"],
-            hide:["loading","prepareReady"],
-            run:function(data){
+            show: ["performer", "prepareCancel", "performerPrepare", "prepareNormal"],
+            hide: ["loading", "prepareReady"],
+            run: function (data) {
                 if (dfs.superuser) {
                     view.id("performanceControl").show();
+                    view.id("performerPrepare").hide();
                 }
-                dfs.roleAssigned=true;
+                dfs.roleAssigned = true;
                 //dfs.role=new Role(data);
-                dfs.events={};
-                dfs.eventTotal=data.role.totalEvents;
+                dfs.events = {};
+                dfs.eventTotal = data.role.totalEvents;
                 for (var evName in data.events) {
-                    var item=data.events[evName];
+                    var item = data.events[evName];
                     try {
-                        console.log("create event "+evName);
-                        dfs.events[evName]=new Event(item);
+                        console.log("create event " + evName);
+                        dfs.events[evName] = new Event(item);
                     } catch (error) {
-                        dfs.log.warn("error creating event "+evName+": "+error);
+                        dfs.log.warn("error creating event " + evName + ": " + error);
                     }
                 }
 
 
                 if (data.performance.styles) {
                     $("#performanceStyle").remove();
-                    var css="";
+                    var css = "";
                     for (var style in data.performance.styles) {
-                        css+=data.performance.styles[style];
+                        css += data.performance.styles[style];
                     }
-                    var cssStyle = $('<style type="text/css" id="performanceStyle">'+css+'</style>');
+                    var cssStyle = $('<style type="text/css" id="performanceStyle">' + css + '</style>');
                     $("head").append(cssStyle);
                 }
                 view.id("performanceMeta").hide();
                 if (!dfs.superuser) {
                     view.id("performanceRoles").hide();
                 } else if (data.roles) {
-                    data.roles.noPrompt=true;
-                    view.state("performanceRoles",data.roles);
+                    data.roles.noPrompt = true;
+                    view.state("performanceRoles", data.roles);
                     view.id("roleChoicePrompt").hide();
                 }
-                var title=data.performance.composer+": "+data.performance.title;
+                var title = data.performance.composer + ": " + data.performance.title;
                 view.id("preAmble").html(data.role.preamble);
-                view.id("prepareHeader").text(title+"  ");
+                view.id("prepareHeader").text(title + "  ");
                 view.id("prepareHeaderSmall").text(" preparing");
                 //view.state("loading",{title:title,text:"Please prepare for performance"});
-                view.id("prepareCancel").show().click(function(){
+                view.id("prepareCancel").show().click(function () {
                     view.state("quitRole");
                     dfs.emit("quitRole");
                 });
@@ -135,71 +142,81 @@ var view={
             }
         },
         loading: {
-            hide: ["fatal","performance"],
+            hide: ["fatal", "performance"],
             show: ["loading", "logo"],
             fade: true,
             run: function (data) {
-                if (!data.title) data.title="Please wait";
+                if (!data.title)
+                    data.title = "Please wait";
                 view.id("loadingTitle").html(data.title);
                 if (data.icon) {
-                    data.text=$("<span />",
+                    data.text = $("<span />",
                             {
-                                class:"glyphicon glyphicon-"+data.icon
-                            }).html()+"&nbsp;&nbsp; "+data.text;
+                                class: "glyphicon glyphicon-" + data.icon
+                            }).html() + "&nbsp;&nbsp; " + data.text;
                 }
                 view.id("loadingText").html(data.text);
             }
         },
         login: {
-            hide: ["performanceControl","loading","fatal","performerPrepare","performance", "superuser", "disable"],
+            hide: ["performanceControl", "loading", "fatal", "performerPrepare", "performance", "superuser", "disable"],
             show: ["logo", "greeting"],
-            run:function(data){
+            run: function (data) {
                 if (data && data.performanceAvailable) {
                     view.cls("anonymousObserver").show();
                 } else {
                     view.cls("anonymousObserver").hide();
                 }
-                
-                view.id("loginButton").unbind().click(function(){
-                    var theName=view.id("username").val();
-                    if (theName===dfs.config.adminUser) {
+
+                view.id("loginButton").unbind().click(function () {
+                    var theName = view.id("username").val();
+                    if (theName === dfs.config.adminUser) {
                         view.state("superuserLogin");
                     } else {
-                        dfs.emit("doLogin",{name:theName});
+                        dfs.emit("doLogin", {name: theName});
                     }
                 });
             }
         },
         superuserLogin: {
             show: ["password"],
-            run: function(){
+            run: function () {
                 view.id("loginButton").html('<span class="glyphicon glyphicon-star-empty"></span> superuser').unbind()
-                    .click(function(){
-                        dfs.emit("doLogin",{
-                            name:view.id("username").val(),
-                            password:view.id("password").val()
-                        })
-                });
+                        .click(function () {
+                            dfs.emit("doLogin", {
+                                name: view.id("username").val(),
+                                password: view.id("password").val()
+                            })
+                        });
             }
         },
-        menu:{
-            show:["performerMenu"],
-            run:function(data){
+        menu: {
+            hide: ["performerMenu"],
+            run: function (data) {
+                view.id("performerMenu").hover(
+                function () {
+                    $(this).show();
+                },
+                function () {
+                    $(this).hide();
+                }
+                );
                 view.id("performerName").text(data.name);
             }
         },
-        performanceAvailable:{
-            show:["performer","performerChoice"],
-            hide:["loading","greeting","performanceList"],
-            run:function(data){
+        performanceAvailable: {
+            show: ["performer", "performerChoice"],
+            hide: ["loading", "greeting", "performanceList","performance"],
+            run: function (data) {
+                
                 if (dfs.superuser) {
                     view.id("performanceControl").show();
-                    view.id("performanceStart").unbind().click(function() {
+                    view.id("performanceStart").unbind().click(function () {
                         dfs.superuser.emit("beginPerformance", {
-                            countIn: 1000*view.id("performanceCountIn").val()
+                            countIn: 1000 * view.id("performanceCountIn").val()
                         });
                     });
-                    view.id("performanceCountIn").unbind().change(function(){
+                    view.id("performanceCountIn").unbind().change(function () {
                         view.id("performanceCountInTime").text(view.id("performanceCountIn").val());
                     });
                 } else if (dfs.roleAssigned) {
@@ -208,106 +225,152 @@ var view={
                 }
                 view.id("performerPrepare").hide();
 
-                
-                    dfs.performance.meta=data.meta;
-                    if (data.meta) {
-                        var info=$("<div />",{
-                            class:"container"
-                        }).append($("<div />",{
-                            class:"row"
-                        }).html("<h3>"+data.title+"&nbsp;&nbsp;&nbsp;<small>"+
-                            data.composer+"</small></h3>")
-                        );
-                        if (dfs.superuser && data.time) {
-                            info.append($("<div />",{
-                                class:"row"
-                            }).text("Runtime forecast: "+data.time/1000+"s")).append($("<div />",{
-                                class:"row"
-                            }));
+
+                dfs.performance.meta = data.meta;
+                if (data.meta) {
+                    var info = $("<div />", {
+                        class: "container"
+                    }).append($("<div />", {
+                        class: "row"
+                    }).html("<h3>" + data.title + "&nbsp;&nbsp;&nbsp;<small>" +
+                            data.composer + "</small></h3>")
+                            );
+                    if (dfs.superuser && data.time) {
+                        info.append($("<div />", {
+                            class: "row"
+                        }).text("Runtime forecast: " + data.time / 1000 + "s")).append($("<div />", {
+                            class: "row"
+                        }));
+                    }
+                    info.append($("<div />",{
+                        class:"row"
+                    }).text("Performance defaults:"));
+                    var metaReps = {
+                        duration: function (v) {
+                            return ["Duration", v / 1000 + "s"];
+                        },
+                        tempo: function (v) {
+                            return ["Tempo",v + "bpm"];
+                        },
+                        loop:function(v) {
+                            if (!v) return;
+                            return ["Loop","events will be repeated"];
+                        },
+                        throb:function(v) {
+                            if (!v) return;
+                            return ["Main screen throb","on"];
+                        },
+                        eventCounter:function(v){
+                            return ["Event counter",(v)?"on":"off"];
+                        },
+                        progressBar:function(v){
+                            return ["Countdown bar", (v)?"on":"off"];
+                        },
+                        throbNext:function(v){
+                            return ["Preview screen throb",(v)?"on":"off"];
+                        },
+                        showNextEvent:function(v){
+                            return ["Preview screen",(v)?"on":"off"];
                         }
-                        for (var metaKey in data.meta) {
-                            var meta=data.meta[metaKey];
-                                var row=$("<div />",{
-                                    class:"row"
-                                });
-                                var key= $("<div />",{
-                                    class:"col-xs-6 col-sm-3"
-                                }).text(metaKey);
-                                var val=key.clone().html("<b>"+meta+"</b>");
-                                row.append(key).append(val);
-                                info.append(row);
+                        
+                    };
+                    
+                    for (var meta in metaReps) {
+                        
+                        if (meta in data.meta) {
+                            var thisMeta=metaReps[meta](data.meta[meta]);
+                            if (thisMeta) {
+                            var row = $("<div />", {
+                            class: "row"
+                        });
+                        var key = $("<div />", {
+                            class: "col-xs-6 col-sm-3"
+                        }).text(
+                               thisMeta[0]
+                        );
+                        var val = key.clone().html("<b>" + thisMeta[1] + "</b>");
+                        row.append(key).append(val);
+                        info.append(row);
+                            
+                            
+                            }
                             
                         }
                     }
-                    if (data.intro) {
-                        dfs.performance.intro=data.intro;
-                        info.append("<br>").append(
-                            $("<div />",{
-                                class:"thumbnail row"
-                            }).text(data.intro)
-                        ).append("<hr />");
-                    }
-                    view.id("performanceMeta").empty().show().append(info);
-                    view.state("performanceRoles",data.roles);
+                    
+ 
                 }
+                if (data.intro) {
+                    dfs.performance.intro = data.intro;
+                    info.append("<br>").append(
+                            $("<div />", {
+                                class: "thumbnail row"
+                            }).text(data.intro)
+                            ).append("<hr />");
+                }
+                view.id("performanceMeta").empty().show().append(info);
+                view.state("performanceRoles", data.roles);
+            }
 
         },
-        performanceRoles:{
-            show:["performanceRoles"],
-            hide:["loading"],
-            run:function(data){
-                var tbl={Name:[],Information:[],Assigned:[],Action:[]};
+        performanceRoles: {
+            show: ["performanceRoles"],
+            hide: ["loading"],
+            run: function (data) {
+                var tbl = {Name: [], Information: [], Assigned: [], Action: []};
                 console.log(data);
-                var statusPrompt="";
-                if (!data.noPrompt) statusPrompt="Please select a role from the list below to take part in the performance"
+                var statusPrompt = "";
+                if (!data.noPrompt)
+                    statusPrompt = "Please select a role from the list below to take part in the performance"
                 for (var key in data) {
-                    var item=data[key];
-                    var id=item.name;
-                    tbl.Name.push("<h3>"+item.name+"<h3>");
-                    var info="";
-                    var show=["clef","instrument","key"];
-                    
+                    var item = data[key];
+                    var id = item.name;
+                    tbl.Name.push("<h3>" + item.name + "<h3>");
+                    var info = "";
+                    var show = ["clef", "instrument", "key"];
+
                     // show additional fields for superuser
                     if (dfs.superuser) {
                         show.push("totalEvents");
                         show.push("performanceTime");
                     }
                     for (var iKey in show) {
-                        var val=item[show[iKey]];
-                        if (show[iKey]==="performanceTime") {
-                            val=item[show[iKey]]/1000+"s";                    
+                        var val = item[show[iKey]];
+                        if (show[iKey] === "performanceTime") {
+                            val = item[show[iKey]] / 1000 + "s";
                         }
-                        if (item[show[iKey]]) info+=show[iKey]+": <b>"+val+"</b><br>";
+                        if (item[show[iKey]])
+                            info += show[iKey] + ": <b>" + val + "</b><br>";
                     }
-                    tbl.Information.push(info+"<hr />");
+                    tbl.Information.push(info + "<hr />");
                     var assigned;
 
-                    var actions=$("<div />",{
-                        class:"btn-group"
+                    var actions = $("<div />", {
+                        class: "btn-group"
                     });
 
 
                     // allow it to be chosen if assigned, and kicked if assigned and ur superuser
                     if (item.assignable && !dfs.roleAssigned) {
-                        actions.append($("<button />",{
-                            class:"btn btn-default",
-                            dfsid:item.name
-                        }).text("Select").click(function(){
-                            dfs.emit("selectRole",{name:$(this).attr("dfsid")});
+                        actions.append($("<button />", {
+                            class: "btn btn-default",
+                            dfsid: item.name
+                        }).text("Select").click(function () {
+                            dfs.emit("selectRole", {name: $(this).attr("dfsid")});
                         }));
                     } else {
 
-                    // not assignable
-                }
-                    if (Object.keys(item.roleMembers).length>0) {
-                        assigned="";
+                        // not assignable
+                    }
+                    if (Object.keys(item.roleMembers).length > 0) {
+                        assigned = "";
                         for (var cKey in item.roleMembers) {
-                            var performer=item.roleMembers[cKey];
-                            assigned+="name: "+performer.name;
+                            var performer = item.roleMembers[cKey];
+                            assigned += "name: " + performer.name;
                             if (dfs.superuser) {
-                                assigned+="<br>ip: "+performer.ip;
+                                assigned += "<br>ip: " + performer.ip;
                             }
-                            assigned+="<hr />";
+                            assigned += "<hr />";
                         }
 //kick button
 //                        if (dfs.superuser) {
@@ -320,60 +383,58 @@ var view={
 //                                });
 //                            }));
 //                        }
-                    
+
 
                     } else {
-                        assigned="Not assigned";
+                        assigned = "Not assigned";
                     }
-                
+
                     tbl.Assigned.push(assigned);
                     tbl.Action.push(actions);
                 }
 
-                view.tableBuilder(view.id("performanceRoles"),tbl,
-                    $("<div />",{
-                        class:"alert alert-info",
-                        id:"roleChoicePrompt"
-                    }).text(statusPrompt));
+                view.tableBuilder(view.id("performanceRoles"), tbl,
+                        $("<div />", {
+                            class: "alert alert-info",
+                            id: "roleChoicePrompt"
+                        }).text(statusPrompt));
             }
         },
-
-        eventInspector:{
-            show:["eventInspector"],
-            hide:[],
-            run:function(data) {
+        eventInspector: {
+            show: ["eventInspector"],
+            hide: [],
+            run: function (data) {
                 if (data.performanceData) {
                     view.tableBuilder(view.id("eventInspector"));
                 }
 
             }
         },
-        eventFollower:{
-            show:["eventInspector"],
-            hide:[],
-            run:function(data) {
+        eventFollower: {
+            show: ["eventInspector"],
+            hide: [],
+            run: function (data) {
                 if (data.performanceData) {
 
-                    view.tableBuilder(view.id("eventInspector"),data.performanceData);
+                    view.tableBuilder(view.id("eventInspector"), data.performanceData);
                 }
 
             }
         },
-
         suListPackages: {
-            show: ["performer","performanceList","performerChoice"],
-            hide: ["performanceMeta","performance","performanceRoles","performanceControl","performerPrepare","greeting","loading"],
+            show: ["performer", "performanceList", "performerChoice"],
+            hide: ["performanceMeta", "performance", "performanceRoles", "performanceControl", "performerPrepare", "greeting", "loading"],
             run: function (request) {
                 var packages = request.packages;
                 for (var i in packages.Title) {
                     var key = packages.key[i];
                     packages.Title[i] = '<h4 class="namePackage">' + packages.Title[i] + '</h4>';
-                    packages.Actions[i] = '<button pkgid="' + key + '" class="editPackage btn btn-default">Edit</button>&nbsp;&nbsp;'+
-                        '<button pkgid="' + key + '" class="removePackage btn btn-danger">Remove</button>&nbsp;&nbsp;'+
-                        '<button pkgid="' + key + '" class="loadPackage btn btn-primary ">Perform</button>';
+                    packages.Actions[i] =// '<button pkgid="' + key + '" class="editPackage btn btn-default">Edit</button>&nbsp;&nbsp;' +
+                         //   '<button pkgid="' + key + '" class="removePackage btn btn-danger">Remove</button>&nbsp;&nbsp;' +
+                            '<button pkgid="' + key + '" class="loadPackage btn btn-primary ">Perform</button>';
                 }
                 delete packages.key;
-                view.tableBuilder(view.id("performanceList"), packages,"<h1>Available compositions</h1><hr />");
+                view.tableBuilder(view.id("performanceList"), packages, "<h1>Available compositions</h1><hr />");
                 view.cls("loadPackage").click(function () {
                     dfs.superuser.emit("loadPackage", {packageID: $(this).attr("pkgid")});
                 });
@@ -381,27 +442,26 @@ var view={
                     var packageID = $(this).attr("pkgid");
                     view.sure(function () {
                         dfs.superuser.emit("removePackage", {id: packageID});
-                    },"Are you sure you want to remove the package?",
-                    "This will permanently delete the composition and any files associated with it.");
+                    }, "Are you sure you want to remove the package?",
+                            "This will permanently delete the composition and any files associated with it.");
                 });
             }
         }
     },
-    sure:function (yesCallback,title,text,okOnly) {
-        if (!title) title = "are you sure?"
-        if (!text) text = "the operation may not be reversible";
-        view.id("modalYes").unbind();
-        view.id("modalNo").unbind();
+    sure: function (yesCallback, title, text, okOnly) {
+        if (!title)
+            title = "are you sure?";
+        if (!text)
+            text = "the operation may not be reversible";
         view.id("modalTitle").html(title);
         view.id("modalText").html(text);
-        view.id("modalYes").click(function () {
+        view.id("modalYes").unbind().click(function () {
             view.id("modal").hide();
             yesCallback();
         });
         if (!okOnly) {
             view.id("modalYes").text("Yes");
-            view.id("modalNo").show();
-            view.id("modalNo").click(function () {
+            view.id("modalNo").show().unbind().click(function () {
                 view.id("modal").fadeOut();
             });
         } else {
@@ -410,10 +470,10 @@ var view={
         }
         view.id("modal").fadeIn();
     },
-    sessionState:function() {
-        dfs.emit(cookieData,function(data){
+    sessionState: function () {
+        dfs.emit(cookieData, function (data) {
             if (data.stateData) {
-                view.state(data.state,data.stateData);
+                view.state(data.state, data.stateData);
             } else {
                 view.state(data.state);
             }
@@ -447,25 +507,23 @@ var view={
                 }
             }
         } catch (error) {
-            if (identifier != "log") {
-                dfs.log.fatal("could not set view state "+identifier+": " + error);
+            if (identifier !== "log") {
+                dfs.log.fatal("could not set view state " + identifier + ": " + error);
             }
         }
     },
-
-    clicks:function() {
-        view.id("quitButton").click(function(){
+    clicks: function () {
+        view.id("quitButton").click(function () {
 
         });
     },
-
-    tableBuilder:function(element,obj,noHeader) {
+    tableBuilder: function (element, obj, noHeader) {
         var self = this;
         var headers = [];
         var rows = [];
         var ind = 0;
         var container = $("<div />", {
-            class: "container-fluid"
+            class: "container"
         });
 
         this.row = function () {
@@ -477,7 +535,7 @@ var view={
 
         this.col = function (html) {
             var item = $("<div />", {
-                class: "col-xs-6 col-sm-3"
+                class: "col-sm-6 col-xs-3"
             });
             item.html(html);
             return item;
@@ -500,12 +558,12 @@ var view={
             }
             container.append(headRow).append("<hr>");
             //headRow.appendTo(container);
-        } else if (noHeader!==true) {
+        } else if (noHeader !== true) {
             container.append(noHeader);
         }
 
         for (var row = 0; row < rows.length; row++) {
-            var thisRow=self.row();
+            var thisRow = self.row();
             for (var col = 0; col < headers.length; col++) {
                 self.col(rows[row][col]).appendTo(thisRow);
             }
@@ -515,8 +573,17 @@ var view={
         element.empty().append(container);
 
     },
-
-    tabledBuilder:function (tableRef, obj) {
+    /**
+     * defunt
+     * @param {jquery} tableRef selector of table
+     * @param {object} obj data like 
+     var exampleInput_obj = {
+     name: ["alice", "bob", "eve"],
+     role: ["lead", "bass", "rhythm"]
+     };
+     * @returns {undefined}
+     */
+    actualTableBuilder: function (tableRef, obj) {
 //    var exampleInput_obj = {
 //        name: ["alice", "bob", "eve"],
 //        role: ["lead", "bass", "rhythm"]
@@ -549,4 +616,4 @@ var view={
         }
     }
 
-}
+};

@@ -1,63 +1,79 @@
-<dfs>
-    <init>
-        <script>
-            
-        // set the composition details
-        new Performance({
-            composer:"dfscore",
-            title:"Hello Score",
-            duration:20000,                    
-            introductionText:
-                "A simple example of alternately selected notation events"
-        });    
-            
-        // duration is important as it permits the use of performance.running later     
-            
-            
+<dfscore>
         
-        // create the roles
+    new Performance({               // set the composition details
+        composer:"dfscore",
+        title:"Mixed",
+        duration: dftool.rand(40000,60000), // nothing to stop things like this here 
+        introductionText:           
+            "An example incorporating other dfscore example techniques into a longer score"
+    });    
+
+
+    // three roles
+    new Role("Lead");
+    new Role("Melody");
+    new Role("Bass");
+
         
-        // preamble is shown to the performer upon role selection
-        new Role("Person A",{
-            preamble: "Beware of the flute"
-        });
-           
-        // instrument parameter just shows in the role list
-        new Role("Person B",{instrument:"Flute"}); 
-            
-        // a role allowing for three individual people    
-        new Role("Other people",{
-            maxPerformers:3
-        });
-            
-        
-        // vextab markup score
-        new ScoreEvent("event1","stave \n"+
-                "notes :q 5/4 5/5 7/4 7/5 s 5/4 5/5 ^3^");   
-            
-        
-        // vextab markup score
-        new ScoreEvent("event2","stave \n"+
-                "notes 12/5 12/4 5/5 5/4 3b4/5");    
-        </script>      
-    </init>
+    // a predefined event to show some randomly placed and coloured shapes
+    new ScriptEvent(        
+            null,                               // no setup (pre-run) script
+            dftool.resource("runshapes.js"),     // use the contents of runscript.js file
+            { showNextEvent:false,
+              progressBar:false },
+            "shapes"                            // with a name specified
+            );                                       
     
-    <score>
-        
-        <script>
+    
+    // a predefined event without a name, but assigned to user variable 'score'
+    var score=new ScoreEvent("stave \n"+
+                                "notes :q 5/4 5/5 7/4 7/5 s 5/4 5/5 ^3^"
+                            );  
 
-        // performance.running becomes false when the performance duration is reached
-        while (performance.running) {
+    // performance.running becomes false when the performance duration is reached
+    
+    var aTime=global("rand",dftool.rand(10000,20000));
+    
+    while (performance.running) {
+
+
+        perform(roles, "shapes", aTime);
+
+    
+        // work out the percentage through the current performance
+        var percentDone=(100/performance.duration)*performance.time    
+    
+        perform(roles,
+                new TextEvent("Give it " + percentDone + "%"),
+                5000,
+                {bpm:120,throb:true}
+               );
+
         
-            // each role repeats this loop until the performance is over
-                        
-            // alternate score events with random time between 5s and 10s
-            roles.perform("event1", dftool.rand(5000,10000));
-            roles.perform("event2", dftool.rand(5000,10000));
-            
-                
+        perform("Lead",score,6000);
+        perform(roles.Melody,new TextEvent("Quiet!"),6000);
+        perform(roles.Bass,
+            new ImageEvent("img1.jpg",{throb:true}),
+        6000);
+    
+    
+        
+        // here we take the roles out of sync with each other for two events 
+        for (var role in roles) {
+            var time=aTime-dftool.rand(aTime*0.4,aTime*0.6);
+            perform(role,
+                    new TextEvent("Play out of sync"),
+                    time);
+    
+            perform(role,
+                    new TextEvent("Get a bit more in sync"),
+                    aTime-time);
         }
+    
+    
+        // all should be back to sync'd up
+        perform(roles, new TextEvent("Harmonise"), 10000);
+    
+    } //
 
-        </script> 
-    </score>
-</dfs>
+</dfscore>

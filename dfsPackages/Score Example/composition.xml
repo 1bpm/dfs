@@ -1,63 +1,66 @@
 <dfs>
-    <init>
-        <script>
-            
-        // set the composition details
-        new Performance({
-            composer:"dfscore",
-            title:"Hello Score",
-            duration:20000,                    
-            introductionText:
-                "A simple example of alternately selected notation events"
-        });    
-            
-        // duration is important as it permits the use of performance.running later     
-            
-            
-        
-        // create the roles
-        
-        // preamble is shown to the performer upon role selection
-        new Role("Person A",{
-            preamble: "Beware of the flute"
-        });
-           
-        // instrument parameter just shows in the role list
-        new Role("Person B",{instrument:"Flute"}); 
-            
-        // a role allowing for three individual people    
-        new Role("Other people",{
-            maxPerformers:3
-        });
-            
-        
-        // vextab markup score
-        new ScoreEvent("event1","stave \n"+
-                "notes :q 5/4 5/5 7/4 7/5 s 5/4 5/5 ^3^");   
-            
-        
-        // vextab markup score
-        new ScoreEvent("event2","stave \n"+
-                "notes 12/5 12/4 5/5 5/4 3b4/5");    
-        </script>      
-    </init>
+
+
+    new Performance({           // construct the performance
+        composer:"dfscore",     
+        title:"Score",          
+        duration:20000,         // duration, optional
+        loop:true,              // whether to repeat the score
+        introductionText:       // what to show to everyone at role selection
+            "A simple example of alternately selected notation events"
+    });    
+
+
+    // create the roles 
+
+    new Role("Person A");
+    new Role("Person B");  
+                            
+
+    new Role("Other People",{
+        maxPerformers:3     // allowing three individual performers (default=1)
+    });
+
+
+
+    // vextab markup score
+    new ScoreEvent("stave \n"+
+                        "notes :q 5/4 5/5 7/4 7/5 s 5/4 5/5 ^3^",
+                   "event1" // the name
+                  );   
+
+    // vextab markup score
+    new ScoreEvent("stave \n"+
+                      "notation=true \n"+
+                      "notes :q (5/4.5/5) (7/4.7/5)s(5/4.5/5) ^3^ \n"+
+                      "notes :8 7-5/4 $.a./b.$ (5/4.5/5)h(7/5) \n"+
+                      "notes :8 (12/5.12/4)ds(5/5.5/4)u 3b4/5 \n"+
+                      "notes :h (5V/6.5/4.6/3.7/2)" ,"event2");    
+
+    new ScoreEvent("stave \n"+
+                      "notation=true \n"+
+                      "key=A time=4/4 \n"+
+                      "notes :q  (5/2.5/3.7/4) :8 7-5h6/3 ^3^ 5h6-7/5 ^3^ :q 7V/4 | \n"+
+                      "notes :8 t12p7/4 s5s3/4 :8 3s:16:5-7/5 :h p5/4","event3");
+
+    // the score ------------------------------------------
+
+    // alternate score events with random time between 5s and 10s
     
-    <score>
-        
-        <script>
+    var x=global("time",dftool.rand(5000,15000));
+    
+    perform("Person A","event1",x);
+    perform("Person B","event2",x);
+    perform("Other People","event3",x);
+    
+    perform("Person A","event2",x);
+    perform("Person B","event3",x);
+    perform("Other People","event1",x);
 
-        // performance.running becomes false when the performance duration is reached
-        while (performance.running) {
-        
-            // each role repeats this loop until the performance is over
-                        
-            // alternate score events with random time between 5s and 10s
-            roles.perform("event1", dftool.rand(5000,10000));
-            roles.perform("event2", dftool.rand(5000,10000));
-            
-                
-        }
+    perform("Person A","event3",x);
+    perform("Person B","event1",x);
+    perform("Other People","event2",x);
 
-        </script> 
-    </score>
+    perform(roles,"event1",x);    
+  
 </dfs>

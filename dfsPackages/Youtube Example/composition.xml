@@ -1,38 +1,42 @@
-<dfs>
-    <init>
-    <script>
+<dfscore>
         
-        // set up the performance
-        new Performance({
-            composer: "dfscore",
-            title: "Hello Image",
-            introductionText: "This is a simple introduction to using images",
-        });
-        
-        // create two roles
-        new Role("Primary");
-        new Role("Secondary");
-    
-        // three events 
-        new ImageEvent("i1", "img1.jpg");
-        new ImageEvent("i2", "img2.jpg");
-        new ImageEvent("i3", "img3.jpg");
-    </script>
-    </init>
-    <score>
-        <script>
-            
-            // Primary role plays the same event at the start every time             
-            roles.Primary.perform("i1", 3000);
-            
-            // then all roles perform a three random events
-            roles.perform(dftool.rand(events), 4000);
-            roles.perform(dftool.rand(events), 5000);
-            roles.perform(dftool.rand(events), 3000);
-            
-            // resulting in Primary having 4 events and Secondary having 3
+    new Performance({               // set up the performance
+        composer: "dfscore",
+        title: "Youtube",
+        showNextEvent: false,       // don't show the event preview
+        progressBar: false,         // don't show the progress/countup bar
+        introductionText: "This is a really simple introduction to wider uses of the dfscore browser implementation, looking at embedding Youtube videos (internet connectivity required). There are better ways to use videos - this does not precache and just creates an embedded element on the page at the time an event is run.",
+    });
 
-        </script>
-    </score>
-</dfs>
+
+    // one role with many performers
+    new Role("Role", {maxPerformers:10});
+
+
+
+    new ScriptEvent(
+        null,                                // no init script    
+        dftool.resource("videoLoader.js"),   // the run script
+        "loadVid");                          // name
+
+
+
+
+
+    // simple linear score made easier with a loop
+
+    
+    // five times in seconds put into an array
+    var times=[15,13,10,8,10];
+
+    // for each time in the times array
+    for (var time in times) {
+    
+        // perform the loadVid event with the time from times array as milliseconds (*1000)
+        perform("Role","loadVid",times[time]*1000);
+    }
+
+    
+            
+</dfscore>
 

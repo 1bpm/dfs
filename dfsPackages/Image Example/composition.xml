@@ -1,38 +1,58 @@
-<dfs>
-    <init>
-    <script>
+<dfscore>
         
-        // set up the performance
-        new Performance({
+        new Performance({               // set up the performance
             composer: "dfscore",
-            title: "Hello Image",
-            introductionText: "This is a simple introduction to using images",
+            title: "Image",
+            introductionText: "This is a really simple introduction to using images",
         });
         
-        // create two roles
+    
+        // create two roles with names
         new Role("Primary");
         new Role("Secondary");
     
-        // three events 
-        new ImageEvent("i1", "img1.jpg");
-        new ImageEvent("i2", "img2.jpg");
-        new ImageEvent("i3", "img3.jpg");
-    </script>
-    </init>
-    <score>
-        <script>
-            
-            // Primary role plays the same event at the start every time             
-            roles.Primary.perform("i1", 3000);
-            
-            // then all roles perform a three random events
-            roles.perform(dftool.rand(events), 4000);
-            roles.perform(dftool.rand(events), 5000);
-            roles.perform(dftool.rand(events), 3000);
-            
-            // resulting in Primary having 4 events and Secondary having 3
+        // two events 
+        new ImageEvent("img1.jpg","im1");  // this one using a dfscore variable, im1
+                                            // accessible as "im1" or events.im1
+    
+        var im2=new ImageEvent("img2.jpg"); // this one using a user variable
+                                             // accessible as im2
 
-        </script>
-    </score>
-</dfs>
+    
+        // events
+            // the events here are ordered by role, but they could be placed
+            // in any order and dfscore will interpret them accordingly
+  
+    
+    
+    
+            // Primary role
+    
+            perform("Primary","im1", 4000);         // perform existing dfscore event "im1"     
+            perform("Primary",
+                        new ImageEvent("img3.jpg","ass"),   // perform a new inline event
+                        3000
+                    );
+            
+            perform("Primary",im2,4000);            // perform existing event from user variable im2
+    
+            perform("Primary",events.im1, 4000);    // perform existing im1 again, 
+                                                        //but from dfscore events object
+            
+                                    
+                        
+            // Secondary role
+    
+            perform("Secondary",
+                        new ImageEvent("img3.jpg","axe"),   // perform a new inline event
+                        3000
+                    );
+    
+            perform("Secondary",events.im1, 5000);  // perform im1 from dfscore events object       
+            perform("Secondary",im2, 4000);         // perform existing event from user variable im2
+            perform("Secondary","im1", 3000);       // perform im1 again
+    
+    
+            // end - both roles finish simultaneously after 15 seconds.
+</dfscore>
 

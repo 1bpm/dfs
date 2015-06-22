@@ -17,7 +17,6 @@ var Role=function(objData) {
     for (var evID in objData.events) {
         var item=objData.events[evID];
         try {
-            console.log("create event "+item.id);
             item.id=evID;
             self.events[item.id]=new Event(item);
         } catch (error) {

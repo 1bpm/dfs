@@ -1,63 +1,58 @@
-<dfs>
-    <init>
-        <script>
-            
-        // set the composition details
-        new Performance({
-            composer:"dfscore",
-            title:"Hello Score",
-            duration:20000,                    
-            introductionText:
-                "A simple example of alternately selected notation events"
-        });    
-            
-        // duration is important as it permits the use of performance.running later     
-            
-            
-        
-        // create the roles
-        
-        // preamble is shown to the performer upon role selection
-        new Role("Person A",{
-            preamble: "Beware of the flute"
-        });
-           
-        // instrument parameter just shows in the role list
-        new Role("Person B",{instrument:"Flute"}); 
-            
-        // a role allowing for three individual people    
-        new Role("Other people",{
-            maxPerformers:3
-        });
-            
-        
-        // vextab markup score
-        new ScoreEvent("event1","stave \n"+
-                "notes :q 5/4 5/5 7/4 7/5 s 5/4 5/5 ^3^");   
-            
-        
-        // vextab markup score
-        new ScoreEvent("event2","stave \n"+
-                "notes 12/5 12/4 5/5 5/4 3b4/5");    
-        </script>      
-    </init>
+<dfscore>
+
+    new Performance({               // construct the performance
+        composer:"dfscore",         
+        title:"Advanced Script",
+        duration:60000,             // in milliseconds
+        showNextEvent:false,        // don't show the event preview
+        progressBar:false,          // don't show the progress / countup bar
+        introductionText:           
+            "An example of advanced client scripting, using the d3 graphics library and functions by Madwort, from andreae-score. This has been noted to not function correctly on Firefox 31 (and below)"
+    });    
+ 
+
     
-    <score>
-        
-        <script>
+    
+    
+    // create the roles. preamble is shown to the performer upon role selection
+    
+    new Role("Person A",
+                {preamble:"React to the graphic cues and ignore the other performer"}
+            );
 
-        // performance.running becomes false when the performance duration is reached
-        while (performance.running) {
-        
-            // each role repeats this loop until the performance is over
-                        
-            // alternate score events with random time between 5s and 10s
-            roles.perform("event1", dftool.rand(5000,10000));
-            roles.perform("event2", dftool.rand(5000,10000));
-            
-                
-        }
+    new Role("Person B",
+                {preamble:"React to the graphic cues relative to what the other performer is playing"}
+            );
 
-        </script> 
-    </score>
-</dfs>
+    new Role("Person C",
+                {preamble:"React to the graphic cues, with particular attention to colour and contrast"}
+            );
+    
+
+    
+    
+    
+    // set up the scripted event
+    var andreaeScore=new ScriptEvent(        
+                    dftool.resource("setup.js"),   // the initialisation (pre-run) script
+                    dftool.resource("run.js")      // the run script, called upon performing the event
+                  );                        // both using dftool.resource to require()
+                                            // a file in the package directory
+
+    
+    
+    // create a global random variable 
+    var time=global("staticRand",dftool.rand(10000,20000));
+    
+    // this is needed, as the following would be unique to the role
+    // var time=dftool.rand(10000,20000);
+
+    // each role repeats this (performance.running) loop for the duration.
+    while (performance.running) {
+
+        // all roles perform andreaeScore for the static random duration
+        perform(roles,andreaeScore,time);
+
+    }
+
+</dfscore>

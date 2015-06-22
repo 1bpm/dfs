@@ -1,80 +1,67 @@
-<dfs>
-    <init>
-        <script>
-            
-            
-        new Performance({
-            composer:"Richard Knight",
-            title:"Hello Text",
-            duration:60000,
-            introductionText:"This is an example of randomly generated text events. The text cues are taken from Rodrigo Constanzo's 'Demo Video'"
-        });
-            // set the composition details
-            // duration is important as it permits the use of performance.running later
-        
-        
-        // create three roles with automatic names (ie Role 1, Role 2, etc)
-        new Role();
-        new Role();
-        new Role();
-        
-        // allow 4 individuals, who will receive the same instructions
-        new Role("Unison",{maxPerformers:4});
-            
-        
-        </script>
-    </init>
-    
-    <score>
-        <script>
-        
-        // words from Rodrigo Constanzo's 'Demo Video'
-        var words=[
-                "quiet/subtle textures",
-                "lock into wonky groove",
-                "as low as possible",
-                "as high as possible",
-                "extremes of register",
-                "one strong gesture",
-                "do nothing",
-                "imitate",
-                "play a supporting role",
-                "continue but quieter",
-                "continue but louder",
-                "slower!",
-                "faster!",
-                "fit in the gaps",
-                "one single short event",
-                "short sounds",
-                "descending",
-                "climb",
-                "start/stop groove",
-                "like going backwards",
-                "go underwater",
-                "tacet",
-                "as quietly as possible",
-                "extreme contrast",
-                "repeating sounds",
-                "polyrhythm",
-                "sustaining/still sounds",
-                "tremolo",
-                "wait",
-                "play a solo",
-                "disconnected"
-            ];
-        
-        
-        // performance.running lasts as long as the performance duration
-        while (performance.running) {
-        
-            // create a new unique random text event, by picking a random entry from words, using dftool.rand()
-            var thisWord=new TextEvent(null,dftool.rand(words));
-                
-            // all roles are issued with the event, with a random duration between 5 and 10 seconds 
-            roles.perform(thisWord,dftool.rand(5000,10000));
-        
-        } // end of performance.running
+<dfscore>
+    new Performance({                // construct the performance
+        composer: "dfscore",         
+        title: "Hello Text",         
+        duration: 60000,             // duration in ms
+        loop: true,                  // repeat the score        
+        introductionText:"This is an example of randomly generated text events. \
+                                The text cues are taken from Rodrigo Constanzo's 'Demo Video'"
+    });                          
 
-        </script> 
-    </score>
-</dfs>
+    
+    // create three roles with automatic names (ie Role 1, Role 2, etc)
+    new Role();
+    new Role();
+    new Role();
+
+    // one more role, allowing 4 individuals who will receive the same instructions
+    new Role("Unison",{maxPerformers:4});           
+    
+
+    var words=[         /* a variable for an [array] containing words
+                                            from Rodrigo Constanzo's 'Demo Video' */
+    
+            "quiet/subtle textures",
+            "lock into wonky groove",
+            "as low as possible",
+            "as high as possible",
+            "extremes of register",
+            "one strong gesture",
+            "do nothing",
+            "imitate",
+            "play a supporting role",
+            "continue but quieter",
+            "continue but louder",
+            "slower!",
+            "faster!",
+            "fit in the gaps",
+            "one single short event",
+            "short sounds",
+            "descending",
+            "climb",
+            "start/stop groove",
+            "like going backwards",
+            "go underwater",
+            "tacet",
+            "as quietly as possible",
+            "extreme contrast",
+            "repeating sounds",
+            "polyrhythm",
+            "sustaining/still sounds",
+            "tremolo",
+            "wait",
+            "play a solo",
+            "disconnected"
+        ];
+
+while (performance.running){
+    // all roles are issued with a new TextEvent with a random duration between 5 and 10 seconds 
+    perform( roles,
+             new TextEvent(dftool.rand(words)),   // create a text event
+             dftool.round(dftool.rand(5,10))*1000   // random time between 5 and 10 seconds
+            );
+
+    // this perform instruction is repeated individually for each performer until
+            // the performance duration is reached
+}
+</dfscore>

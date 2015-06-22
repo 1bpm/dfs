@@ -1,3 +1,3 @@
 #!/usr/bin/env node
-var dfsServer=require("./lib/server.js");
-dfsServer.serveForever();
+var dfscore=require("./lib/server.js");
+dfscore.serveForever();

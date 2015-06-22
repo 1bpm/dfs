@@ -1,63 +1,35 @@
-<dfs>
-    <init>
-        <script>
-            
-        // set the composition details
-        new Performance({
-            composer:"dfscore",
-            title:"Hello Score",
-            duration:20000,                    
-            introductionText:
-                "A simple example of alternately selected notation events"
-        });    
-            
-        // duration is important as it permits the use of performance.running later     
-            
-            
+<dfscore>
         
-        // create the roles
-        
-        // preamble is shown to the performer upon role selection
-        new Role("Person A",{
-            preamble: "Beware of the flute"
-        });
-           
-        // instrument parameter just shows in the role list
-        new Role("Person B",{instrument:"Flute"}); 
-            
-        // a role allowing for three individual people    
-        new Role("Other people",{
-            maxPerformers:3
-        });
-            
-        
-        // vextab markup score
-        new ScoreEvent("event1","stave \n"+
-                "notes :q 5/4 5/5 7/4 7/5 s 5/4 5/5 ^3^");   
-            
-        
-        // vextab markup score
-        new ScoreEvent("event2","stave \n"+
-                "notes 12/5 12/4 5/5 5/4 3b4/5");    
-        </script>      
-    </init>
-    
-    <score>
-        
-        <script>
+    new Performance({               // set the composition details
+        composer:"dfscore",
+        title:"Script",
+        duration:60000,             // permits the use of performance.running  
+        showNextEvent:false,        // don't show the event preview
+        progressBar:false,          // don't show the countup bar
+        introductionText:           
+            "A simple example of using a script to generate random blue rectangles"
+    });    
 
-        // performance.running becomes false when the performance duration is reached
-        while (performance.running) {
-        
-            // each role repeats this loop until the performance is over
-                        
-            // alternate score events with random time between 5s and 10s
-            roles.perform("event1", dftool.rand(5000,10000));
-            roles.perform("event2", dftool.rand(5000,10000));
-            
-                
-        }
 
-        </script> 
-    </score>
-</dfs>
+    // two anonymous roles
+    new Role();
+    new Role();
+
+
+    var shapes=new ScriptEvent(        
+            null,                               // no setup (pre-run) script
+            dftool.resource("runscript.js")     // use the contents of runscript.js file
+           );                                       // for the main script
+
+
+
+    // performance.running becomes false when the performance duration is reached
+    while (performance.running) {
+
+        // each role repeats this loop until the performance is over
+        perform(roles, shapes, dftool.rand(10000,20000));
+
+
+    }
+
+</dfscore>
