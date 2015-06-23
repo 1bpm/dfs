@@ -1,3 +1,5 @@
+// this is d3 - a javascript graphics/graphing library
+
 !function() {
   var d3 = {
     version: "3.5.5"

@@ -37,16 +37,13 @@
                       "notes :8 (12/5.12/4)ds(5/5.5/4)u 3b4/5 \n"+
                       "notes :h (5V/6.5/4.6/3.7/2)" ,"event2");    
 
-    new ScoreEvent("stave \n"+
-                      "notation=true \n"+
-                      "key=A time=4/4 \n"+
-                      "notes :q  (5/2.5/3.7/4) :8 7-5h6/3 ^3^ 5h6-7/5 ^3^ :q 7V/4 | \n"+
-                      "notes :8 t12p7/4 s5s3/4 :8 3s:16:5-7/5 :h p5/4","event3");
+    // load this vextab markup from score.txt using dftool.resource()                  
+    new ScoreEvent(dftool.resource("score.txt"),"event3");
 
-    // the score ------------------------------------------
+   
 
-    // alternate score events with random time between 5s and 10s
     
+    // set a global random time for all of the events
     var x=global("time",dftool.rand(5000,15000));
     
     perform("Person A","event1",x);

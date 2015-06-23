@@ -3,62 +3,67 @@
     new Performance({               // set up the performance
         composer: "dfscore",        
         title: "Tempo",
-        duration: 60000,            // in ms
+        tempo: 100,                 // set the default tempo to 100bpm
+        duration: 60000,            // in milliseconds
         throb: true,                // throb the main display of all events
-        introductionText: "This is an introduction to using dynamic tempo cues. Given that the tempos of an event and the next are given, dfscore will dynamically interpolate between them, in time for the throbbing of the preview display.",
+        introductionText: "This is an introduction to using dynamic tempo cues. Given that the tempos of an event and the next are given, dfscore will dynamically interpolate between them, in time for the throbbing of the preview display. However be aware of the awkward results from having two non-corresponding times/tempos",
     });
 
     
     new Role("Primary");            // create 
     new Role("Secondary");          // two roles
     
-    // using the global() function to have sync'd variables between roles
-        // in this case setting a global default random time for every event
-    var time=global("gRand",dftool.rand(10000,15000));
+    // this is the time we will use for every event, stored in a regular javascript variable
+    var time=10000;
     
     
     // perform grouped events for the two roles with a tempo specified
     perform("Primary",      
-            new TextEvent("Atonal hits (120bpm) for "+time,{tempo:120})
+            new TextEvent("Atonal hits (120bpm)",{tempo:120})
             , time);
     perform("Secondary",
-            new TextEvent("Tonal hits (60bpm) for "+time,{tempo:60})
+            new TextEvent("Tonal hits (60bpm)",{tempo:60})
             , time);
 
 
     perform("Primary",
-            new TextEvent("Tonal hits (60bpm) for "+time,{tempo:60})
+            new TextEvent("Tonal hits (60bpm)",{tempo:60})
             , time);
     perform("Secondary",
-            new TextEvent("Atonal hits (120bpm) for "+time,{tempo:120})
+            new TextEvent("Atonal hits (120bpm)",{tempo:120})
             , time);
 
 
     perform("Primary",
-            new TextEvent("Tonal hits (60bpm) for "+time,{tempo:60})
+            new TextEvent("Tonal hits (60bpm)",{tempo:60})
             , time);
     perform("Secondary",
-            new TextEvent("Atonal hits (60bpm) for "+time,{tempo:60})
+            new TextEvent("Atonal hits (60bpm)",{tempo:60})
             , time);
 
 
 
-    // make a stack more events
+    // make seven more events by iterating through an array
     
-    var tempos=[150,70,110,135,160,50,100];
-    for (var t in tempos) {
-        var tempo=tempos[t];
+    // the array, containing tempo values
+    var tempos=[110,70,80,130,160,50,100];
+    
+    // each index (position) in the tempos array
+    for (var index in tempos) {
+        var tempo=tempos[index]; // tempo = the tempo from the array
+        
+        // perform events at the tempo, and mention the tempo in the text cue
         perform("Primary",
-                new TextEvent("Melody at "+tempo+" for "+time,{tempo:tempo}),
+                new TextEvent("Melody at "+tempo+" bpm",{tempo:tempo}),
                 time
                );
                
         perform("Secondary",
-                new TextEvent("Rhythm at "+tempo+" for "+time,{tempo:tempo}),
+                new TextEvent("Rhythm at "+tempo+" bpm",{tempo:tempo}),
                 time
                );
     
-    }
+    } // end of "for (var t in tempos)"
 
 
     

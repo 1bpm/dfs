@@ -7,7 +7,7 @@ module.exports = function () {
     context.append('<svg xmlns="http://www.w3.org/2000/svg" id="' + tid + '" style="width:100%;height:100%;"></svg>');
 
     // if some instance of the andreaeScore script isn't already setup
-    if (!window.andreaeScore) {
+    if (!dfs.andreaeScore) {
 
         // require d3
         require(["/assets/performance/d3.js"], function (d3) {
@@ -15,7 +15,7 @@ module.exports = function () {
             
             // andreae-score from Madwort.co.uk
             // altered to take selector as arg
-            window.andreaeScore = function (id) {
+            dfs.andreaeScore = function (id) {
                 function generateRandomScore(numLoops, width, height, boundary) {
                     var loops = [];
                     for (var i = 0; i < numLoops; i++) {
