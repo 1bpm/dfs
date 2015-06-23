@@ -244,7 +244,7 @@ var view = {
                     }
                     info.append($("<div />",{
                         class:"row"
-                    }).text("Performance defaults:"));
+                    }).text("Performance details:"));
                     var metaReps = {
                         duration: function (v) {
                             return ["Duration", v / 1000 + "s"];
