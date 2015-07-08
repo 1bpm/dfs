@@ -9,12 +9,15 @@ module.exports = function () {
     // if some instance of the andreaeScore script isn't already setup
     if (!dfs.andreaeScore) {
 
-        // require d3
+        // require d3, and when it is loaded run the function
         require(["/assets/performance/d3.js"], function (d3) {
                
+              
             
-            // andreae-score from Madwort.co.uk
-            // altered to take selector as arg
+            /* andreae-score by Tom Ward : Madwort.co.uk
+             * 
+             * altered a bit to take the svg selector as arg etc
+             */
             dfs.andreaeScore = function (id) {
                 function generateRandomScore(numLoops, width, height, boundary) {
                     var loops = [];

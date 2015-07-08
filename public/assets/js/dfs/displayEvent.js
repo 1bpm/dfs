@@ -1,3 +1,9 @@
+/**
+ *  dfscore
+ *  GPL license, see COPYING
+ *  copyright 2015 richard@1bpm.net  
+ */
+
 var Event = function (inData) {
     var displayEvents = {
         text: function (data) {
@@ -177,12 +183,12 @@ var Event = function (inData) {
                 view.id(theEvent.data.displayArea + "Throb").css("opacity","0.7").show().fadeOut(fadeTime);
                 
                 if (current+beatDuration < duration) {
-                    setTimeout(doThrob, beatDuration);
+                    realTimeout(doThrob, beatDuration);
                     current+=beatDuration;
                     currentBeat++;
                 }
             }
-            setTimeout(doThrob, throbStartTime);
+            realTimeout(doThrob, throbStartTime);
         };
 
         this.run = function (completeFunction, durationOverride) {
@@ -198,7 +204,7 @@ var Event = function (inData) {
             }
 
             if (completeFunction)
-                setTimeout(function(){
+                realTimeout(function(){
                   //  self.stop();
                     completeFunction();
                 }, duration);

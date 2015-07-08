@@ -61,23 +61,31 @@
 
     <div id="observe"></div>
 
+    <div id="performerMenuContainer" class="superuser"> 
+        <span class="glyphicon glyphicon-cog"></span>
+    </div>
     <div id="performerMenu" class="superuser">
-        <div class="btn-group dropup">
-            <button id="performerName" class="btn btn-default" data-toggle="performerConfigMenu">Performer</button>
-            <button  class="btn btn-default dropdown-toggle" data-toggle="performerConfigMenu">
-                <span class="caret"></span>
-                <span class="sr-only">Toggle dropdown</span>
-            </button>
+
+
+            
             <ul id="performerConfigMenu" class="dropdown-menu" role="menu">
                 <li><a id="quitButton" href="#">
                     <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>End performance</a></li>
-                <li><a id="aboutDfs" href="#">
-                    <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>Help</a></li>
-                <li class="divider"></li>
-                <li class="superuser"><a id="createPerformance" href="#">
+             <!--   
+                <li class="superuser"><a id="inObserveButton" href="#">
                     <span class="glyphicon glyphicon-file" aria-hidden="true"></span>See overview</a>
                 </li>
-             <!--   <li class="superuser"><a id="beginPerformanceButton" href="#">
+              
+             
+             
+             
+             
+             <li><a id="aboutDfs" href="#">
+                    <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>Help</a></li>
+                <li class="divider"></li>
+             
+             
+             <li class="superuser"><a id="beginPerformanceButton" href="#">
                     <span class="glyphicon glyphicon-play-circle" aria-hidden="true"></span>Begin performance</a>
                 </li>
                 <li class="superuser"><a id="clearPerformanceButton" href="#">
@@ -91,7 +99,8 @@
                 </li>-->
             </ul>
         </div>
-    </div>
+  
+
 
 
     <div id="performer">

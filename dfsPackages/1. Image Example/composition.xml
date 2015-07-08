@@ -24,13 +24,13 @@
             // in any order and dfscore will interpret them accordingly
   
     
-    
+
     
             // Primary role
     
             perform("Primary","im1", 4000);         // perform existing dfscore event "im1"     
             perform("Primary",
-                        new ImageEvent("img3.jpg","ass"),   // perform a new inline event
+                        new ImageEvent("img3.jpg"),   // perform a new inline event
                         3000
                     );
             
@@ -44,7 +44,7 @@
             // Secondary role
     
             perform("Secondary",
-                        new ImageEvent("img3.jpg","axe"),   // perform a new inline event
+                        new ImageEvent("img3.jpg"),   // perform a new inline event
                         3000
                     );
     

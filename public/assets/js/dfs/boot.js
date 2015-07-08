@@ -1,4 +1,4 @@
- require(
+require(
         [
             "../vexTab",
             "../jQuery",
@@ -6,14 +6,14 @@
             "displayEvent",
             "role",
             "views",
-            //"trigger",
-            "inspector",
+            "trigger",
+            "observer",
             "admin"
-        ],function(){
-         $(function(){
-             dfs.init();
-         });
-     });
+        ], function () {
+    $(function () {
+        dfs.init();
+    });
+});
 
 
 

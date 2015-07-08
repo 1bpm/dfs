@@ -1,4 +1,8 @@
-
+/**
+ *  dfscore
+ *  GPL license, see COPYING
+ *  copyright 2015 richard@1bpm.net  
+ */
 
 var Admin=function() {
     var self=this;

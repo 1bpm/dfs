@@ -1,99 +1,45 @@
-var Trigger=function() {
-    var id=Session.uid();
-    var active=false;
-    var bind;
 
-    this.unbind=function() {
-        bind.unbind();
-    };
+var Trigger = function (data) {
+    var self=this;
+    this.id=data.id;
+    var trig={};
+    function triggerFunc() {
+        dfs.emit("trigger", {id: data.id});
+    }
 
+    var triggers = {
+        keyboard: {
+            trigger: function (theEvent) {
 
-};
-
-var Listener=function(data){
-    this.id=dfs.uid();
-    this.active=false;
-    var callback;
-    var listener;
-    var types={
-        "audio.pitch":PitchListener,
-        "key.press":function () {
-            this.listen=function() {
-                Page.performance.main.keydown(function(theEvent) {
-                    listener.outputFrame({key:theEvent.keyCode});
-                });
-            };
-        },
-        "mouse.drag":function() {
-
-            this.unbind=function(){
-                $(document).off("mousemove");
-            }
-
-            this.bind=function() {
-                $(document).mousemove(function(theEvent) {
-                    listener.outputFrame({x:theEvent.clientX,y:theEvent.clientY});
-                });
-            }
-        },
-        "mouse.click":function() {
-
-                this.unbind=function(){
-                    $(document).off("mousemove");
+                if (!data.key) return;
+                if (theEvent.keyCode === data.key.toLowerCase().charCodeAt(0) ||
+                        theEvent.keyCode === data.key.toUpperCase().charCodeAt(0)) {
+                    triggerFunc();
                 }
-                this.bind=function() {
-                    $(document).mousedown(function (theEvent) {
-                        listener.outputFrame({x: theEvent.clientX, y: theEvent.clientY});
-                    });
-                }
-
-        }
-    };
-
-    };
-
-
-    this.unbind=function() {
-        self.listener.unbind();
-    };
-
-
-    this.setActive=function(state) {
-        if (state && !active) {
-            this.listen();
-            active=state;
-        }
-        if (!state && active) {
-            this.clear();
-            active=state;
+            },
+            ref: "keydown." + data.id
+        },
+        click:{
+            trigger:function(theEvent) {
+                
+            },
+            ref:"click."+data.id
         }
     };
 
 
-    this.outputFrame=function(theData) {
-        var toSend={
-            type:"Performance",
-            performance: {
-                type: "frame",
-                id:id,
-                data:theData
-            }
-        };
-        Dfs.emit(toSend);
+
+    if (data.type in triggers) {
+        trig=triggers[data.type];
+        $(window).bind(trig.ref, trig.trigger);
+    }
+
+
+    this.unbind = function () {
+        $(window).unbind(trig.ref);
     };
 
-};
 
-
-this.trigger=function() {
-    var toSend={
-        type:"Performance",
-        performance : {
-            type:"trigger",
-            id:id
-        }
-    };
-    Dfs.emit(toSend);
 };
 
 
@@ -112,64 +58,165 @@ var KeyTrigger = function (key, id) {
 
 
 
-var ClickListener=
+//
+//var Listener=function(data){
+//    this.id=dfs.uid();
+//    this.active=false;
+//    var callback;
+//    var listener;
+//    var types={
+//        "audio.pitch":PitchListener,
+//        "key.press":function () {
+//            this.listen=function() {
+//                Page.performance.main.keydown(function(theEvent) {
+//                    listener.outputFrame({key:theEvent.keyCode});
+//                });
+//            };
+//        },
+//        "mouse.drag":function() {
+//
+//            this.unbind=function(){
+//                $(document).off("mousemove");
+//            }
+//
+//            this.bind=function() {
+//                $(document).mousemove(function(theEvent) {
+//                    listener.outputFrame({x:theEvent.clientX,y:theEvent.clientY});
+//                });
+//            }
+//        },
+//        "mouse.click":function() {
+//
+//                this.unbind=function(){
+//                    $(document).off("mousemove");
+//                }
+//                this.bind=function() {
+//                    $(document).mousedown(function (theEvent) {
+//                        listener.outputFrame({x: theEvent.clientX, y: theEvent.clientY});
+//                    });
+//                }
+//
+//        }
+//    };
+//
+//    };
+//
+//
+//    this.unbind=function() {
+//        self.listener.unbind();
+//    };
+//
+//
+//    this.setActive=function(state) {
+//        if (state && !active) {
+//            this.listen();
+//            active=state;
+//        }
+//        if (!state && active) {
+//            this.clear();
+//            active=state;
+//        }
+//    };
+//
+//
+//    this.outputFrame=function(theData) {
+//        var toSend={
+//            type:"Performance",
+//            performance: {
+//                type: "frame",
+//                id:id,
+//                data:theData
+//            }
+//        };
+//        Dfs.emit(toSend);
+//    };
+//
+//};
+//
+//
+//this.trigger=function() {
+//    var toSend={
+//        type:"Performance",
+//        performance : {
+//            type:"trigger",
+//            id:id
+//        }
+//    };
+//    Dfs.emit(toSend);
+//};
+
+
+var KeyTrigger = function (key, id) {
+    var listener = new Listener();
+    listener.setID(id);
+    this.listen = function () {
+        document.keydown(function (theEvent) {
+            if (theEvent.keyCode === key) {
+                listener.trigger();
+            }
+
+        });
+    };
 };
 
-var DragListener=function() {
-    this.listen=function() {
-        $(document).mousedown(function(theEvent) {
-            $(document).mousemove(function(theEvent) {
-                listener.outputFrame({x:theEvent.clientX,y:theEvent.clientY});
+
+
+
+var DragListener = function () {
+    this.listen = function () {
+        $(document).mousedown(function (theEvent) {
+            $(document).mousemove(function (theEvent) {
+                listener.outputFrame({x: theEvent.clientX, y: theEvent.clientY});
             });
         });
     };
 
 };
 
-var AudioListener=function() {
+var AudioListener = function () {
 
-    this.setup=function() {
+    this.setup = function () {
         if (!DfsAudio.active) {
             DfsAudio.setup();
         }
     };
 
-    this.listen=function() {
-        this.pitchTrack(function(pitchVal) {
+    this.listen = function () {
+        this.pitchTrack(function (pitchVal) {
             this.emit(pitchVal);
         });
     };
-    this.clear=function() {
+    this.clear = function () {
 
     };
-    this.pitchTrack=function(callback) {
+    this.pitchTrack = function (callback) {
         dfsAudio.initAnalysis();
 
     };
 };
 
-var DfsAudio={
-    audioContext:new AudioContext(),
-    sourceNode:null,
-    buffer:new Float32Array(1024),
-    analyser:null,
-    active:false,
-    setup:function() {
+var DfsAudio = {
+    audioContext: new AudioContext(),
+    sourceNode: null,
+    buffer: new Float32Array(1024),
+    analyser: null,
+    active: false,
+    setup: function () {
 
     },
-    setInput:function() {
+    setInput: function () {
 
     },
-    enableAudio:function() {
+    enableAudio: function () {
         this.analyseLive();
 
     },
-    analyseLive:function(callback) {
+    analyseLive: function (callback) {
         try {
             navigator.getUserMedia =
-                navigator.getUserMedia ||
-                navigator.webkitGetUserMedia ||
-                navigator.mozGetUserMedia;
+                    navigator.getUserMedia ||
+                    navigator.webkitGetUserMedia ||
+                    navigator.mozGetUserMedia;
             navigator.getUserMedia({
                 "audio": {
                     "mandatory": {
@@ -180,7 +227,7 @@ var DfsAudio={
                     },
                     "optional": []
                 }
-            }, function() {
+            }, function () {
                 sourceNode = audioContext.createMediaStreamSource(stream);
                 analyser = audioContext.createAnalyser();
                 analyser.fftSize = 2048;
@@ -188,53 +235,53 @@ var DfsAudio={
                 analyser.connect(audioContext.destination);
                 sourceNode.start(0);
                 callback(buffer);
-            }, function(error) {
-                log.fatal("analyser setup error: "+error);
+            }, function (error) {
+                log.fatal("analyser setup error: " + error);
             });
         } catch (error) {
-            log.fatal("getUserMedia error: "+error);
+            log.fatal("getUserMedia error: " + error);
         }
     },
-    autoCorrelate:function(buffer) {
-        var sampleRate=audioContext.sampleRate;
+    autoCorrelate: function (buffer) {
+        var sampleRate = audioContext.sampleRate;
         var SIZE = buffer.length;
-        var MAX_SAMPLES = Math.floor(SIZE/2);
+        var MAX_SAMPLES = Math.floor(SIZE / 2);
         var best_offset = -1;
         var best_correlation = 0;
         var rms = 0;
         var foundGoodCorrelation = false;
         var correlations = new Array(MAX_SAMPLES);
-        for (var i=0;i<SIZE;i++) {
+        for (var i = 0; i < SIZE; i++) {
             var val = buffer[i];
-            rms += val*val;
+            rms += val * val;
         }
-        rms = Math.sqrt(rms/SIZE);
-        if (rms<0.01)
+        rms = Math.sqrt(rms / SIZE);
+        if (rms < 0.01)
             return -1;
 
-        var lastCorrelation=1;
+        var lastCorrelation = 1;
         for (var offset = MIN_SAMPLES; offset < MAX_SAMPLES; offset++) {
             var correlation = 0;
 
-            for (var i=0; i<MAX_SAMPLES; i++) {
-                correlation += Math.abs((buffer[i])-(buffer[i+offset]));
+            for (var i = 0; i < MAX_SAMPLES; i++) {
+                correlation += Math.abs((buffer[i]) - (buffer[i + offset]));
             }
-            correlation = 1 - (correlation/MAX_SAMPLES);
+            correlation = 1 - (correlation / MAX_SAMPLES);
             correlations[offset] = correlation;
-            if ((correlation>0.9) && (correlation > lastCorrelation)) {
+            if ((correlation > 0.9) && (correlation > lastCorrelation)) {
                 foundGoodCorrelation = true;
                 if (correlation > best_correlation) {
                     best_correlation = correlation;
                     best_offset = offset;
                 }
             } else if (foundGoodCorrelation) {
-                var shift = (correlations[best_offset+1] - correlations[best_offset-1])/correlations[best_offset];
-                return sampleRate/(best_offset+(8*shift));
+                var shift = (correlations[best_offset + 1] - correlations[best_offset - 1]) / correlations[best_offset];
+                return sampleRate / (best_offset + (8 * shift));
             }
             lastCorrelation = correlation;
         }
         if (best_correlation > 0.01) {
-            return sampleRate/best_offset;
+            return sampleRate / best_offset;
         }
         return -1;
     }

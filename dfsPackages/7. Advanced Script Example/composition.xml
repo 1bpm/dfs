@@ -7,7 +7,7 @@
         showNextEvent:false,        // don't show the event preview
         progressBar:false,          // don't show the progress / countup bar
         introductionText:           
-            "An example of advanced client scripting, using the d3 graphics library and functions by Madwort, from andreae-score. This has been noted to not function correctly on Firefox 31 (and below)"
+            "An example of advanced client scripting, using the d3 graphics library and functions from andreae-score by Tom Ward : Madwort.co.uk. This has been noted to not function correctly on Firefox 31 (and below)"
     });    
  
 

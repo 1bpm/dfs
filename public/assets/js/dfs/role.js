@@ -1,3 +1,4 @@
+
 var Role=function(objData) {
     var self=this;
     this.id=null;
@@ -52,6 +53,7 @@ var Role=function(objData) {
 
         performanceStart:function(request) {
             if (!dfs.roleAssigned) return;
+            
             view.state("performanceStart",{countIn:request.countIn});
             dfs.emit("performanceStart",{acknowledged:true});
         }

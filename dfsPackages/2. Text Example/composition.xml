@@ -53,13 +53,19 @@
             "disconnected"
         ];
 
+// while within the performance duration
 while (performance.running){
+    
     // all roles are issued with a new TextEvent with a random duration between 5 and 10 seconds 
+    // dftool.rand() is used to select a random word from the array
+    //   and also to pick a number between 5 and 10, also rounded down
     perform( roles,
              new TextEvent(dftool.rand(words)),   // create a text event
-             dftool.round(dftool.rand(5,10))*1000   // random time between 5 and 10 seconds
+             dftool.round(dftool.rand(5,10))*1000   // random time between 5 and 10 seconds (unique for each role)
             );
 
     // this perform instruction is repeated individually for each performer until
-            // the performance duration is reached
+    // the performance duration is reached
 }
+
+</dfscore>

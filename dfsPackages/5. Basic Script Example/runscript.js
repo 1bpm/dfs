@@ -1,4 +1,4 @@
-module.exports=function(){  // module.exports is what the requirer sees
+module.exports=function(){  // dftool.resource is passed the contents of this function
     
     function add() {    // a function to repeat
         
@@ -15,7 +15,7 @@ module.exports=function(){  // module.exports is what the requirer sees
         // append it to the dfscore context
         context.append(t);
         
-        // repeat the add function randomly
+        // repeat the add function randomly to create blue rectangles
         setTimeout(add,Math.random()*1000);
     }
     

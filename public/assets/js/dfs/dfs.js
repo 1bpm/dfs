@@ -1,3 +1,4 @@
+
 JSON.parseObject = function (input) {
     return JSON.parse(input, function (key, value) {
         if (value && typeof value === "string"
@@ -26,15 +27,33 @@ var cookie = {
         var ca = document.cookie.split(';');
         for (var i = 0; i < ca.length; i++) {
             var c = ca[i];
-            while (c.charAt(0) == ' ')
+            while (c.charAt(0) === ' ')
                 c = c.substring(1);
-            if (c.indexOf(name) == 0)
+            if (c.indexOf(name) === 0)
                 return c.substring(name.length, c.length);
         }
         return null;
     }
 };
 
+function realTimeout(oncomplete, length) {
+    setTimeout(oncomplete,length);return; //bypass for moment
+// self-adjusting setTimeout with 10ms resolution
+    var steps = (length / 2);
+    var speed = length / steps;
+    var count = 0;
+    var start = new Date().getTime();
+    
+    function timeInstance() {
+        if (count++ === steps) {
+            oncomplete();
+        } else {
+            var diff = (new Date().getTime() - start) - (count * speed);
+            setTimeout(timeInstance, (speed - diff));
+        }
+    }
+    setTimeout(timeInstance, speed);
+}
 
 var dfs = {
     _idCounter: 0,
@@ -46,12 +65,17 @@ var dfs = {
     superuser: null,
     observer: null,
     websocket: null,
+    triggers:{},
     init: function () {
         window.WebSocket = window.WebSocket || window.MozWebSocket;
         window.AudioContext = window.AudioContext || window.webkitAudioContext;
         view.state("init");
     },
+    clock:0,
     routes: {
+        clock:function(request){
+            
+        },
         eventCache: function (request) {
             for (var evName in request.events) {
                 var item = request.events[evName];
@@ -99,12 +123,15 @@ var dfs = {
                 dfs.role.routing(request.role);
             }
         },
+        resetPerformance:function(request){
+            dfs.resetPerformance();
+        },
         performanceComplete: function (request) {
             dfs.live=false;
             dfs.resetPerformance();
         },
         performanceAvailable: function (request) {
-            if (request.view === "login") {
+            if (view.currentState === "login") {
                 view.id("anonymousObserver").show();
             } else if (!dfs.roleAssigned || dfs.superuser) {
                 dfs.roleAssigned = true;
@@ -222,13 +249,18 @@ var dfs = {
     volatileRouting: function (request) {
         dfs.routing(request, JSON.parseObject);
     },
+    
+    
+    
+    
+    /// this needs a look
     routing: function (request, parseFunc) {
-        if (!parseFunc)
-            parseFunc = JSON.parse;
+        if (!parseFunc) parseFunc = JSON.parse;
+        request=parseFunc(request);
         if (request.cacheID && dfs.requestCache[request.cacheID]) {
-            dfs.requestCache[request.cacheID](parseFunc(request));
+            dfs.requestCache[request.cacheID](request);
         } else if (request.route in dfs.routes) {
-            dfs.routes[request.route](parseFunc(request));
+            dfs.routes[request.route](request);
         }
     },
     emit: function (route, data, callback) {
@@ -259,6 +291,10 @@ var dfs = {
         dfs.roleAssigned = false;
         dfs.role = null;
         dfs.events = {};
+        for (var t in dfs.triggers) {
+            dfs.triggers[t].unbind();
+        }
+        dfs.triggers={};
         dfs.eventNum = 0, dfs.eventTotal = 0;
         view.id("mainDisplay").empty().append($("<div />", {id: "mainThrob"}));
         view.id("counterDisplay").text("");
@@ -269,7 +305,9 @@ var dfs = {
         view.id("performanceProgressBar").css({
             width: "0%"
         });
-        $("#performance").hide();
+        view.id("performance").hide();
+        view.id("performerPrepare").hide();
+        view.state("loading",{title:"Awaiting conductor",text:"Please wait while the conductor sets up the current performance"});
     },
     initConnection: function () {
         var sessionState = cookie.get();

@@ -1,4 +1,4 @@
-var view = {
+window.view = {
     id: function (id) {
         return $("#" + id);
     },
@@ -35,7 +35,7 @@ var view = {
         },
         fatal: {
             show: ["fatal"],
-            hide: ["loading"],
+            hide: ["loading", "performerMenuContainer"],
             run: function (data) {
                 if (!data.title)
                     data.title = "Fatal error";
@@ -68,15 +68,20 @@ var view = {
             hide: ["performanceControl", "prepareCancel", "performerChoice", "prepareNormal"],
             run: function (data) {
                 var duration = 5000;
+
                 if (data.countIn)
                     duration = data.countIn;
                 view.id("prepareHeaderSmall").text(" beginning");
+
                 view.id("prepareCount").animate({
                     width: "100%"
                 }, duration, "linear", function () {
-                    if (dfs.roleAssigned) view.state("performance");
+                    if (dfs.roleAssigned)
+                        view.state("performance");
                     if (!dfs.roleAssigned && dfs.superuser) {
                         // monitor
+                    } else if (dfs.superuser) {
+                        view.id("performerMenuContainer").show();
                     }
                 });
             }
@@ -110,6 +115,16 @@ var view = {
                         dfs.log.warn("error creating event " + evName + ": " + error);
                     }
                 }
+                
+                for (var trName in data.role.triggers) {
+                    var item=data.role.triggers[trName];
+                    try {
+                        console.log("create trigger "+trName);
+                        dfs.triggers[trName]=new Trigger(item);
+                    } catch (error) {
+                        dfs.log.warn("error creating trigger "+trName+": "+error);
+                    }
+                }
 
 
                 if (data.performance.styles) {
@@ -121,6 +136,8 @@ var view = {
                     var cssStyle = $('<style type="text/css" id="performanceStyle">' + css + '</style>');
                     $("head").append(cssStyle);
                 }
+                
+                
                 view.id("performanceMeta").hide();
                 if (!dfs.superuser) {
                     view.id("performanceRoles").hide();
@@ -129,6 +146,7 @@ var view = {
                     view.state("performanceRoles", data.roles);
                     view.id("roleChoicePrompt").hide();
                 }
+                
                 var title = data.performance.composer + ": " + data.performance.title;
                 view.id("preAmble").html(data.role.preamble);
                 view.id("prepareHeader").text(title + "  ");
@@ -191,24 +209,42 @@ var view = {
             }
         },
         menu: {
-            hide: ["performerMenu"],
+            show: ["performerMenu"],
             run: function (data) {
-                view.id("performerMenu").hover(
-                function () {
-                    $(this).show();
-                },
-                function () {
-                    $(this).hide();
-                }
+                if (!data.superuser)
+                    return;
+                view.id("performerMenuContainer").hover(
+                        function () {
+                            view.id("performerMenuContainer").css("opacity", 0.8);
+                            view.id("performerConfigMenu").show();
+                        });
+
+                view.id("performerConfigMenu").hover(
+                        function () {
+
+                        },
+                        function () {
+                            view.id("performerMenuContainer").css("opacity", 0.2);
+                            view.id("performerConfigMenu").fadeOut();
+                        }
+
                 );
-                view.id("performerName").text(data.name);
+
+
+
+                view.id("quitButton").click(function(){
+                    dfs.superuser.emit("clearPerformance",{});
+                });
+                view.id("inObserveButton").click(function(){
+                    
+                });
             }
         },
         performanceAvailable: {
             show: ["performer", "performerChoice"],
-            hide: ["loading", "greeting", "performanceList","performance"],
+            hide: ["loading", "greeting", "performanceList", "performance"],
             run: function (data) {
-                
+
                 if (dfs.superuser) {
                     view.id("performanceControl").show();
                     view.id("performanceStart").unbind().click(function () {
@@ -242,63 +278,65 @@ var view = {
                             class: "row"
                         }));
                     }
-                    info.append($("<div />",{
-                        class:"row"
+                    info.append($("<div />", {
+                        class: "row"
                     }).text("Performance details:"));
                     var metaReps = {
                         duration: function (v) {
                             return ["Duration", v / 1000 + "s"];
                         },
                         tempo: function (v) {
-                            return ["Tempo",v + "bpm"];
+                            return ["Tempo", v + "bpm"];
                         },
-                        loop:function(v) {
-                            if (!v) return;
-                            return ["Loop","events will be repeated"];
+                        loop: function (v) {
+                            if (!v)
+                                return;
+                            return ["Loop", "events will be repeated"];
                         },
-                        throb:function(v) {
-                            if (!v) return;
-                            return ["Main screen throb","on"];
+                        throb: function (v) {
+                            if (!v)
+                                return;
+                            return ["Main screen throb", "on"];
                         },
-                        eventCounter:function(v){
-                            return ["Event counter",(v)?"on":"off"];
+                        eventCounter: function (v) {
+                            return ["Event counter", (v) ? "on" : "off"];
                         },
-                        progressBar:function(v){
-                            return ["Countdown bar", (v)?"on":"off"];
+                        progressBar: function (v) {
+                            return ["Countdown bar", (v) ? "on" : "off"];
                         },
-                        throbNext:function(v){
-                            return ["Preview screen throb",(v)?"on":"off"];
+                        throbNext: function (v) {
+                            return ["Preview screen throb", (v) ? "on" : "off"];
                         },
-                        showNextEvent:function(v){
-                            return ["Preview screen",(v)?"on":"off"];
+                        showNextEvent: function (v) {
+                            return ["Preview screen", (v) ? "on" : "off"];
                         }
-                        
+
                     };
-                    
+
                     for (var meta in metaReps) {
-                        
+
                         if (meta in data.meta) {
-                            var thisMeta=metaReps[meta](data.meta[meta]);
+                            var thisMeta = metaReps[meta](data.meta[meta]);
                             if (thisMeta) {
-                            var row = $("<div />", {
-                            class: "row"
-                        });
-                        var key = $("<div />", {
-                            class: "col-xs-6 col-sm-3"
-                        }).text(
-                               thisMeta[0]
-                        );
-                        var val = key.clone().html("<b>" + thisMeta[1] + "</b>");
-                        row.append(key).append(val);
-                        info.append(row);
-                            
-                            
+                                var row = $("<div />", {
+                                    class: "row"
+                                });
+                                var key = $("<div />", {
+                                    class: "col-xs-6 col-sm-3"
+                                }).text(
+                                        thisMeta[0]
+                                        );
+                                var val = key.clone().html("<b>" + thisMeta[1] + "</b>");
+                                row.append(key).append(val);
+                                info.append(row);
+
+
                             }
-                            
+
                         }
                     }
-                    
- 
+
+
                 }
                 if (data.intro) {
                     dfs.performance.intro = data.intro;
@@ -363,14 +401,14 @@ var view = {
                         // not assignable
                     }
                     if (Object.keys(item.roleMembers).length > 0) {
-                        assigned = "";
+                        assigned = "<h4>";
                         for (var cKey in item.roleMembers) {
                             var performer = item.roleMembers[cKey];
-                            assigned += "name: " + performer.name;
+                            assigned += '<span class="glyphicon glyphicon-user"></span>&nbsp;' + performer.name;
                             if (dfs.superuser) {
-                                assigned += "<br>ip: " + performer.ip;
+                                assigned += '&nbsp;&nbsp;&nbsp;<small><span class="glyphicon glyphicon-globe"></span>' + performer.ip+"</small>";
                             }
-                            assigned += "<hr />";
+                            assigned += "</h4>";
                         }
 //kick button
 //                        if (dfs.superuser) {
@@ -423,14 +461,14 @@ var view = {
         },
         suListPackages: {
             show: ["performer", "performanceList", "performerChoice"],
-            hide: ["performanceMeta", "performance", "performanceRoles", "performanceControl", "performerPrepare", "greeting", "loading"],
+            hide: ["performerMenuContainer","performanceMeta", "performance", "performanceRoles", "performanceControl", "performerPrepare", "greeting", "loading"],
             run: function (request) {
                 var packages = request.packages;
                 for (var i in packages.Title) {
                     var key = packages.key[i];
                     packages.Title[i] = '<h4 class="namePackage">' + packages.Title[i] + '</h4>';
-                    packages.Actions[i] =// '<button pkgid="' + key + '" class="editPackage btn btn-default">Edit</button>&nbsp;&nbsp;' +
-                         //   '<button pkgid="' + key + '" class="removePackage btn btn-danger">Remove</button>&nbsp;&nbsp;' +
+                    packages.Actions[i] = // '<button pkgid="' + key + '" class="editPackage btn btn-default">Edit</button>&nbsp;&nbsp;' +
+                            //   '<button pkgid="' + key + '" class="removePackage btn btn-danger">Remove</button>&nbsp;&nbsp;' +
                             '<button pkgid="' + key + '" class="loadPackage btn btn-primary ">Perform</button>';
                 }
                 delete packages.key;
@@ -448,6 +486,7 @@ var view = {
             }
         }
     },
+    // show the modal box
     sure: function (yesCallback, title, text, okOnly) {
         if (!title)
             title = "are you sure?";
@@ -479,6 +518,7 @@ var view = {
             }
         });
     },
+    // set the view state
     state: function (identifier, data) {
         try {
             var thisState = view.states[identifier];
@@ -517,6 +557,7 @@ var view = {
 
         });
     },
+    // build a 'table' 
     tableBuilder: function (element, obj, noHeader) {
         var self = this;
         var headers = [];
@@ -573,17 +614,8 @@ var view = {
         element.empty().append(container);
 
     },
-    /**
-     * defunt
-     * @param {jquery} tableRef selector of table
-     * @param {object} obj data like 
-     var exampleInput_obj = {
-     name: ["alice", "bob", "eve"],
-     role: ["lead", "bass", "rhythm"]
-     };
-     * @returns {undefined}
-     */
-    actualTableBuilder: function (tableRef, obj) {
+    // build an actual table - defunct
+    actualTableBuilder: function (tableRef, obj, noheader) {
 //    var exampleInput_obj = {
 //        name: ["alice", "bob", "eve"],
 //        role: ["lead", "bass", "rhythm"]
