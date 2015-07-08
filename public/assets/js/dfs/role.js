@@ -1,4 +1,4 @@
-
+// to be removed
 var Role=function(objData) {
     var self=this;
     this.id=null;

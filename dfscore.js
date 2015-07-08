@@ -1,9 +1,4 @@
 #!/usr/bin/env node
-/**
- *  dfscore
- *  GPL license, see COPYING
- *  copyright 2015 richard@1bpm.net  
- */
 var npm=require("npm");
 
 // attempt to dynamically use npm

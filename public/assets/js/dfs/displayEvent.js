@@ -1,8 +1,3 @@
-/**
- *  dfscore
- *  GPL license, see COPYING
- *  copyright 2015 richard@1bpm.net  
- */
 
 var Event = function (inData) {
     var displayEvents = {
