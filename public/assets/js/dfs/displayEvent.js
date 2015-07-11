@@ -144,6 +144,7 @@ var Event = function (inData,displaySpace) {
             var beatDuration = ((60 / self.bpm) * 1000);
             var beats=4;
             var fadeTime = beatDuration * 0.6;
+            if (fadeTime>250) fadeTime=250;
             var currentBeat = 1;
             if (!main) { // mini event throbbing, beats back from duration         
                 for (beats = 4; beats > 0; beats--) {
