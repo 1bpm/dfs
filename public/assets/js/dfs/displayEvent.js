@@ -1,16 +1,30 @@
 
-var Event = function (inData) {
+var Event = function (inData,displaySpace) {
+    if (!displaySpace) displaySpace="";
+    
     var displayEvents = {
         text: function (data) {
             this.data = data;
             this.html = function () {
-                var ht = "<div class='textDisplayEvent'";
-                if (data.class) {
-                    ht = ht.concat(" class='" + data.class + "'>");
-                } else {
-                    ht = ht.concat(">");
-                }
-                ht = ht.concat(data.content + "</div>");
+                var scale=1200/window.screen.width;
+                var classes="textDisplayEvent";
+                if (data.class) classes+=" "+data.class;
+                var params={class:classes};
+                var txtLen=data.content.length;
+                var fontSize=128;
+                if (txtLen>=50) fontSize=20;
+                if (txtLen<45) fontSize=30;
+                if (txtLen<40) fontSize=40;
+                if (txtLen<35) fontSize=50;
+                if (txtLen<30) fontSize=80;
+                if (txtLen<25) fontSize=100;
+                if (txtLen<20) fontSize=120;
+                if (txtLen<15) fontSize=180;
+                if (txtLen<10) fontSize=230;
+                if (txtLen<5) fontSize=300;
+                var ht=$("<div />",params)
+                        .css("font-size",Math.floor(fontSize*scale)+"px")
+                        .text(data.content);
                 return ht;
             };
         },
@@ -18,22 +32,20 @@ var Event = function (inData) {
             this.data = data;
 
             this.html = function () {
-                var ht = '<div style="margin-left:auto;background-position:center;' +
-                        'margin-right:auto;width:100%;height:100%;background-repeat:no-repeat;' +
-                        'background-image:url(\'/assets/performance/' + data.content + '\')"';
-                if (data.class) {
-                    ht = ht.concat(" class='" + data.class + "'>");
-                } else {
-                    ht = ht.concat(">");
-                }
-                ht = ht.concat("</div>");
+                var classes="imageDisplayEvent";
+                if (data.class) classes+=" "+data.class;
+                
+                var ht=$("<div />",{
+                    class:classes
+                }).css("background-image","url('/assets/performance/"+data.content+"')");
                 return ht;
             };
+            
             this.preScript = function (context) {
                 view.id("performance").show();
                 context.show();
-                context.hide();
-                if (!dfs.live) view.id("performance").hide();
+                context.hide(); 
+                if (!dfs.live) view.id("performance"+displaySpace).hide();
             };
         },
         html: function (data) {
@@ -44,33 +56,45 @@ var Event = function (inData) {
         },
         script: function (data) {
             this.data = data;
-
+            var identifier=data.displayArea+data.name+displaySpace;
             this.getScript = function () {
-                var scriptRun = "var context=$('#innerScript" + data.displayArea + data.name + "'); " + data.content[1];
+                var scriptRun = "var context=$('#innerScript" + identifier + "'); " + data.content[1];
                 return scriptRun;
             };
             
             this.preScript=function(context) {
                 if (!data.content[0]) return;
-                var scriptRun = "var context=$('#innerScript" + data.displayArea + data.name + "'); " + data.content[0];
+                var scriptRun = "var context=$('#innerScript" + identifier + "'); " + data.content[0];
                 eval(scriptRun);
             };
 
             this.html = function () {
-                return '<div class="scriptEvent" id="innerScript' + data.displayArea + data.name + '"></div>';
+                var ht=$("<div />",{
+                    class:"scriptEvent",
+                    id:"innerScript"+identifier
+                });
+                return ht;
             };
 
         },
         score: function (data) {
             this.data = data;
+            var identifier=data.displayArea + data.name+displaySpace;
             var tabdiv;
             this.html = function () {
-                //var htVal='<canvas id="scEv'+data.id+'"></canvas>';
-                var htVal = '<div width="800" height="768" scale="1" id="scEv' + data.displayArea + data.name + '" class="vexScore vex-tabdiv">' + data.content + '</div>';
+                var classes="vexScore vex-tabdiv";
+                if (data.class) classes+=" "+data.class;
+                
+                var ht=$("<div />",{
+                    id:"scEv"+identifier,
+                    class:classes
+                }).text(data.content);
+                var htVal = '<div width="800" height="768" scale="1" id="scEv' + identifier + '" class="vexScore vex-tabdiv">' + data.content + '</div>';
                 return htVal;
+                // return ht.html();
             };
             this.preScript = function (context) {
-                tabdiv = Vex.Flow.TabDiv.prototype.init("#scEv" + data.displayArea + data.name);
+                tabdiv = Vex.Flow.TabDiv.prototype.init("#scEv" + identifier);
             };
         },
         canvas: function (data) {
@@ -175,7 +199,7 @@ var Event = function (inData) {
                     beatDuration = ((60 / self.bpm) * 1000);
                 }
 
-                view.id(theEvent.data.displayArea + "Throb").css("opacity","0.7").show().fadeOut(fadeTime);
+                view.id(theEvent.data.displayArea + "Throb"+displaySpace).css("opacity","0.7").show().fadeOut(fadeTime);
                 
                 if (current+beatDuration < duration) {
                     realTimeout(doThrob, beatDuration);
@@ -183,6 +207,7 @@ var Event = function (inData) {
                     currentBeat++;
                 }
             }
+            
             realTimeout(doThrob, throbStartTime);
         };
 
@@ -209,7 +234,7 @@ var Event = function (inData) {
             
 
             if (self.event.showNextEvent && self.miniEvent) {
-                view.id("miniDisplay").show();
+                view.id("miniDisplay"+displaySpace).show();
                 self.miniEvent.miniEvent=null;
                 self.miniEvent.getDiv().show();
                 self.miniEvent.runScript(duration);
@@ -217,7 +242,7 @@ var Event = function (inData) {
                     self.miniEvent.throb(duration);
                 }          
             } else {
-                view.id("miniDisplay").hide();
+                view.id("miniDisplay"+displaySpace).hide();
             }
             
             if (self.event.throb) self.throb(duration);
@@ -225,23 +250,31 @@ var Event = function (inData) {
             if (self.runScript) self.runScript(duration);
             self.getDiv().show();
             
-            
+            var dfsSpecial=(self.event.name.substr(0,4)==="_dfs")?true:false;
             
 
-            if (self.event.eventCounter && dfs.eventNum<=dfs.eventTotal) {
-                view.id("counterDisplay").text(dfs.eventNum+"/"+dfs.eventTotal);
+            if (self.event.eventCounter 
+                    && dfs.eventNum<=dfs.eventTotal 
+                    && !dfsSpecial) {
+                view.id("counterDisplay"+displaySpace).text(dfs.eventNum+"/"+dfs.eventTotal).show();
             } else {
-                view.id("counterDisplay").hide();
+                view.id("counterDisplay"+displaySpace).hide();
+            }
+            
+            if (dfsSpecial && self.event.progressBar) {
+                view.id("performanceProgressBar"+displaySpace).css("background-color","red");
+            } else {
+                view.id("performanceProgressBar"+displaySpace).css("background-color","#000000");
             }
 
             if (self.event.progressBar) {
-                view.id("performanceProgressBar").show().animate({
+                view.id("performanceProgressBar"+displaySpace).show().animate({
                     width: "100%"
                 }, duration, "linear", function () {
                     // completeFunction used to be here
                 });
             } else {
-                view.id("performanceProgressBar").hide();
+                view.id("performanceProgressBar"+displaySpace).hide();
             }
 
 
@@ -295,26 +328,29 @@ var Event = function (inData) {
             var displayArea;
             switch (dispArea) {
                 case "main":
-                    displayArea = "#mainDisplay";
+                    displayArea = "#mainDisplay"+displaySpace;
                     break;
                 case "mini":
-                    displayArea = "#miniDisplayInner";
+                    displayArea = "#miniDisplayInner"+displaySpace;
                     break;
                 case "aux":
-                    displayArea = "#auxDisplay";
+                    displayArea = "#auxDisplay"+displaySpace;
                     break;
                 default:
-                    displayArea = "#mainDisplay";
+                    displayArea = "#mainDisplay"+displaySpace;
             }
-            $(displayArea).append($("<div />", {
+            var innerEvent=$("<div />", {
                 class: dispArea + "Event event",
-                id: "event" + dispArea + self.id
-            }).html(theEvent.html()));
+                id: "event" + dispArea + self.id + displaySpace
+            }).append(theEvent.html());
+            console.log(theEvent.html());
+                    
+            $(displayArea).append(innerEvent);
 
             //    '<div class="' + dispArea
             //   + 'Event" id="event' + dispArea + self.id + '">' + theEvent.html() + '</div>');
 
-            self.div = "#event" + dispArea + self.id;
+            self.div = "#event" + dispArea + self.id+displaySpace;
             self.stop();
             if (theEvent.preScript) {
                 theEvent.preScript(self.getDiv());

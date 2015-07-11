@@ -67,23 +67,32 @@ window.view = {
             show: ["performerPrepare", "prepareReady"],
             hide: ["performanceControl", "prepareCancel", "performerChoice", "prepareNormal"],
             run: function (data) {
-                var duration = 5000;
-
-                if (data.countIn)
-                    duration = data.countIn;
-                view.id("prepareHeaderSmall").text(" beginning");
-
-                view.id("prepareCount").animate({
-                    width: "100%"
-                }, duration, "linear", function () {
-                    if (dfs.roleAssigned)
+                if (dfs.roleAssigned)
                         view.state("performance");
                     if (!dfs.roleAssigned && dfs.superuser) {
                         // monitor
                     } else if (dfs.superuser) {
                         view.id("performerMenuContainer").show();
                     }
-                });
+                
+                
+//                var duration = 5000;
+//
+//                if (data.countIn)
+//                    duration = data.countIn;
+//                view.id("prepareHeaderSmall").text(" beginning");
+//
+//                view.id("prepareCount").animate({
+//                    width: "100%"
+//                }, duration, "linear", function () {
+//                    if (dfs.roleAssigned)
+//                        view.state("performance");
+//                    if (!dfs.roleAssigned && dfs.superuser) {
+//                        // monitor
+//                    } else if (dfs.superuser) {
+//                        view.id("performerMenuContainer").show();
+//                    }
+//                });
             }
         },
         quitRole: {
@@ -115,14 +124,14 @@ window.view = {
                         dfs.log.warn("error creating event " + evName + ": " + error);
                     }
                 }
-                
+
                 for (var trName in data.role.triggers) {
-                    var item=data.role.triggers[trName];
+                    var item = data.role.triggers[trName];
                     try {
-                        console.log("create trigger "+trName);
-                        dfs.triggers[trName]=new Trigger(item);
+                        console.log("create trigger " + trName);
+                        dfs.triggers[trName] = new Trigger(item);
                     } catch (error) {
-                        dfs.log.warn("error creating trigger "+trName+": "+error);
+                        dfs.log.warn("error creating trigger " + trName + ": " + error);
                     }
                 }
 
@@ -136,8 +145,8 @@ window.view = {
                     var cssStyle = $('<style type="text/css" id="performanceStyle">' + css + '</style>');
                     $("head").append(cssStyle);
                 }
-                
-                
+
+
                 view.id("performanceMeta").hide();
                 if (!dfs.superuser) {
                     view.id("performanceRoles").hide();
@@ -146,7 +155,7 @@ window.view = {
                     view.state("performanceRoles", data.roles);
                     view.id("roleChoicePrompt").hide();
                 }
-                
+
                 var title = data.performance.composer + ": " + data.performance.title;
                 view.id("preAmble").html(data.role.preamble);
                 view.id("prepareHeader").text(title + "  ");
@@ -186,26 +195,51 @@ window.view = {
                     view.cls("anonymousObserver").hide();
                 }
 
-                view.id("loginButton").unbind().click(function () {
+                function doLogin() {
                     var theName = view.id("username").val();
                     if (theName === dfs.config.adminUser) {
                         view.state("superuserLogin");
                     } else {
                         dfs.emit("doLogin", {name: theName});
                     }
+                }
+
+                view.id("username").unbind().keypress(function (ev) {
+                    if (ev.keyCode == 13) {
+                        doLogin();
+                    }
+                });
+
+
+
+                view.id("loginButton").unbind().click(function () {
+                    doLogin();
                 });
             }
         },
         superuserLogin: {
             show: ["password"],
             run: function () {
+                function suLogin() {
+                    dfs.emit("doLogin", {
+                        name: view.id("username").val(),
+                        password: view.id("password").val()
+                    });
+                }
                 view.id("loginButton").html('<span class="glyphicon glyphicon-star-empty"></span> superuser').unbind()
                         .click(function () {
-                            dfs.emit("doLogin", {
-                                name: view.id("username").val(),
-                                password: view.id("password").val()
-                            })
+                            suLogin();
                         });
+                view.id("password").unbind().keypress(function (ev) {
+                    if (ev.keyCode == 13) {
+                        suLogin();
+                    }
+                });
+                
+                // weird workaround for focus not being set properly
+                setTimeout(function () {
+                    view.id("password").focus();
+                }, 1);
             }
         },
         menu: {
@@ -232,11 +266,11 @@ window.view = {
 
 
 
-                view.id("quitButton").click(function(){
-                    dfs.superuser.emit("clearPerformance",{});
+                view.id("quitButton").click(function () {
+                    dfs.superuser.emit("clearPerformance", {});
                 });
-                view.id("inObserveButton").click(function(){
-                    
+                view.id("inObserveButton").click(function () {
+
                 });
             }
         },
@@ -406,7 +440,7 @@ window.view = {
                             var performer = item.roleMembers[cKey];
                             assigned += '<span class="glyphicon glyphicon-user"></span>&nbsp;' + performer.name;
                             if (dfs.superuser) {
-                                assigned += '&nbsp;&nbsp;&nbsp;<small><span class="glyphicon glyphicon-globe"></span>' + performer.ip+"</small>";
+                                assigned += '&nbsp;&nbsp;&nbsp;<small><span class="glyphicon glyphicon-globe"></span>' + performer.ip + "</small>";
                             }
                             assigned += "</h4>";
                         }
@@ -461,7 +495,7 @@ window.view = {
         },
         suListPackages: {
             show: ["performer", "performanceList", "performerChoice"],
-            hide: ["performerMenuContainer","performanceMeta", "performance", "performanceRoles", "performanceControl", "performerPrepare", "greeting", "loading"],
+            hide: ["performerMenuContainer", "performanceMeta", "performance", "performanceRoles", "performanceControl", "performerPrepare", "greeting", "loading"],
             run: function (request) {
                 var packages = request.packages;
                 for (var i in packages.Title) {

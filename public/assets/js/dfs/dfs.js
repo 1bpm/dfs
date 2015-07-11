@@ -14,6 +14,26 @@ JSON.parseObject = function (input) {
     });
 };
 
+function setBrowserSpecifics() {
+    window.WebSocket = window.WebSocket || window.MozWebSocket;
+    window.AudioContext = window.AudioContext || window.webkitAudioContext;
+
+//    var version = false,
+//            isSafari = Object.prototype.toString.call(window.HTMLElement).indexOf('Constructor') > 0,
+//            isOpera = !!window.opera || navigator.userAgent.indexOf(' OPR/') >= 0,
+//            isChrome = !!window.chrome && !isOpera;
+//    if (isChrome) {
+//        version = (window.navigator.appVersion.match(/Chrome\/(\d+)\./) !== null) ?
+//                parseInt(window.navigator.appVersion.match(/Chrome\/(\d+)\./)[1], 10) :
+//                0;
+//        version = (version >= 10) ? true : false;
+//    }
+//
+//    if (isSafari || version) {
+//        view.id("miniDisplayInner").css('-webkit-transform', 'scale(0.5)');
+//        view.id("miniDisplayInner").css('-webkit-transform-origin', '0 0');
+//    }
+}
 
 var cookie = {
     set: function (cvalue) {
@@ -37,15 +57,18 @@ var cookie = {
 };
 
 function realTimeout(oncomplete, length) {
-    setTimeout(oncomplete,length);return; //bypass for moment
-// self-adjusting setTimeout with 10ms resolution
-    var steps = (length / 2);
+    return setTimeout(oncomplete,length);
+    if (length < 200) {
+        setTimeout(oncomplete, length);
+        return;
+    }
+    var steps = (length / 200);
     var speed = length / steps;
     var count = 0;
     var start = new Date().getTime();
-    
+
     function timeInstance() {
-        if (count++ === steps) {
+        if (count++ >= steps) {
             oncomplete();
         } else {
             var diff = (new Date().getTime() - start) - (count * speed);
@@ -60,21 +83,20 @@ var dfs = {
     config: {},
     requestCache: {},
     role: null,
-    live:false,
+    live: false,
     performance: {meta: {}, intro: null},
     superuser: null,
     observer: null,
     websocket: null,
-    triggers:{},
+    triggers: {},
     init: function () {
-        window.WebSocket = window.WebSocket || window.MozWebSocket;
-        window.AudioContext = window.AudioContext || window.webkitAudioContext;
+        setBrowserSpecifics();
         view.state("init");
     },
-    clock:0,
+    clock: 0,
     routes: {
-        clock:function(request){
-            
+        clock: function (request) {
+
         },
         eventCache: function (request) {
             for (var evName in request.events) {
@@ -123,11 +145,10 @@ var dfs = {
                 dfs.role.routing(request.role);
             }
         },
-        resetPerformance:function(request){
+        resetPerformance: function (request) {
             dfs.resetPerformance();
         },
         performanceComplete: function (request) {
-            dfs.live=false;
             dfs.resetPerformance();
         },
         performanceAvailable: function (request) {
@@ -176,7 +197,7 @@ var dfs = {
             dfs.observer = new Observer();
         },
         performanceStart: function (request) {
-            dfs.live=true;
+            dfs.live = true;
             dfs.eventNum = 0;
             view.state("performanceStart", {countIn: request.countIn});
             dfs.emit("performanceStart", {acknowledged: true});
@@ -191,7 +212,8 @@ var dfs = {
             setTimeout(function () {
                 dfs.emit("eventAcknowledged", {id: id, tid: tid});
             }, 0);
-            dfs.eventNum++;
+            
+            if (id!=="_dfsPerformanceReady") dfs.eventNum++;
             view.id("performanceProgressBar").stop();
             view.id("performanceProgressBar").css("width", "0%");
 
@@ -249,14 +271,11 @@ var dfs = {
     volatileRouting: function (request) {
         dfs.routing(request, JSON.parseObject);
     },
-    
-    
-    
-    
     /// this needs a look
     routing: function (request, parseFunc) {
-        if (!parseFunc) parseFunc = JSON.parse;
-        request=parseFunc(request);
+        if (!parseFunc)
+            parseFunc = JSON.parse;
+        request = parseFunc(request);
         if (request.cacheID && dfs.requestCache[request.cacheID]) {
             dfs.requestCache[request.cacheID](request);
         } else if (request.route in dfs.routes) {
@@ -287,28 +306,29 @@ var dfs = {
             dfs.initConnection();
         });
     },
-    resetPerformance: function () {
-        dfs.roleAssigned = false;
-        dfs.role = null;
-        dfs.events = {};
-        for (var t in dfs.triggers) {
-            dfs.triggers[t].unbind();
-        }
-        dfs.triggers={};
-        dfs.eventNum = 0, dfs.eventTotal = 0;
-        view.id("mainDisplay").empty().append($("<div />", {id: "mainThrob"}));
-        view.id("counterDisplay").text("");
-        view.id("miniDisplayInner").empty();
-        view.id("prepareCount").css({
-            width: "0%"
-        });
-        view.id("performanceProgressBar").css({
-            width: "0%"
-        });
-        view.id("performance").hide();
-        view.id("performerPrepare").hide();
-        view.state("loading",{title:"Awaiting conductor",text:"Please wait while the conductor sets up the current performance"});
-    },
+            resetPerformance: function () {
+                dfs.roleAssigned = false;
+                dfs.live=false;
+                dfs.role = null;
+                dfs.events = {};
+                for (var t in dfs.triggers) {
+                    dfs.triggers[t].unbind();
+                }
+                dfs.triggers = {};
+                dfs.eventNum = 0, dfs.eventTotal = 0;
+                view.id("mainDisplay").empty().append($("<div />", {id: "mainThrob"}));
+                view.id("counterDisplay").text("");
+                view.id("miniDisplayInner").empty();
+                view.id("prepareCount").css({
+                    width: "0%"
+                });
+                view.id("performanceProgressBar").css({
+                    width: "0%"
+                });
+                view.id("performance").hide();
+                view.id("performerPrepare").hide();
+                view.state("loading", {title: "Awaiting conductor", text: "Please wait while the conductor sets up the current performance"});
+            },
     initConnection: function () {
         var sessionState = cookie.get();
         try {

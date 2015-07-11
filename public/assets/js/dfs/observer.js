@@ -89,6 +89,45 @@ var Observer=function(){
         }
     };
 
+//    this.setupDisplayArea=function(name,width,height){
+//        var container=$("<div />",{
+//            id:"performance"+name,
+//            class:"performance"
+//        }).css("width",width+"px").css("height",height+"px");
+//        var mainDisplay=$("<div />",{
+//            id:"mainDisplay"+name,
+//            class:"mainDisplay"
+//        }).append($("<div />",{
+//            id:"mainThrob"+name,
+//            class:"mainThrob"
+//        }));
+//        container.append(mainDisplay);
+//        var miniDisplay=$("<div />",{
+//            id:"miniDisplay"+name,
+//            class:"miniDisplay"
+//        }).append($("<div />",{
+//            id:"miniThrob"+name,
+//            class:"miniThrob"
+//        })).append($("<div />",{
+//            id:"miniDisplayInner"+name,
+//            class:"miniDisplayInner"
+//        }));
+//        container.append(miniDisplay);
+//        container.append($("<div />",{
+//            id:"counterDisplay"+name,
+//            class:"counterDisplay"
+//        }));
+//        var progress=$("<div />",{
+//            id:"progressContainer"+name,
+//            class:"progressContainer"
+//        }).append($("<div />",{
+//            id:"performanceProgressBar"+name,
+//            class:"performanceProgressBar"
+//        }));
+//        container.append(progress);
+//        return container;
+//    };
+
     /**
      * Prepare the overview div
      */

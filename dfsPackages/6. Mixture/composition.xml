@@ -1,0 +1,80 @@
+<dfscore>
+        
+    new Performance({               // set the composition details
+        composer:"dfscore",
+        title:"Mixed",
+        duration: dftool.rand(40000,60000), // nothing to stop things like this here 
+        introductionText:           
+            "An example incorporating other dfscore example techniques into a longer score"
+    });    
+
+
+    // three roles
+    new Role("Lead");
+    new Role("Melody");
+    new Role("Bass");
+
+        
+    // a predefined event to show some randomly placed and coloured shapes
+    new ScriptEvent(        
+            null,                               // no setup (pre-run) script
+            dftool.resource("runshapes.js"),     // use the contents of runscript.js file
+            { showNextEvent:false,
+              progressBar:false },
+            "shapes"                            // with a name specified
+            );                                       
+    
+    
+    // a predefined event without a name, but assigned to user variable 'score'
+    var score=new ScoreEvent("stave \n"+
+                                "notes :q 5/4 5/5 7/4 7/5 s 5/4 5/5 ^3^"
+                            );  
+
+    // performance.running becomes false when the performance duration is reached
+    
+    var aTime=global("rand",dftool.rand(10000,20000));
+    
+    while (performance.running) {
+
+        
+        perform(roles, "shapes", aTime);
+
+    
+        // work out the percentage through the current performance
+        var percentDone=(100/performance.duration)*performance.time    
+    
+        perform(roles,
+                new TextEvent("Give it " + percentDone + "%"),
+                5000,
+                {bpm:120,throb:true}
+               );
+
+        
+        perform("Lead",score,6000);
+        perform(roles.Melody,new TextEvent("Quiet!"),6000);
+        perform(roles.Bass,
+            new ImageEvent("img1.jpg",{throb:true}),
+        6000);
+    
+    
+        
+        // here we take the roles out of sync with each other for two events 
+        // bearing in mind that even using roles to despatch to all roles,
+        //          each role will have its own time variable (var time)
+    
+            var time=aTime-dftool.rand(aTime*0.4,aTime*0.6);
+            perform(roles,
+                    new TextEvent("Play out of sync"),
+                    time);
+    
+            perform(roles,
+                    new TextEvent("Get a bit more in sync"),
+                    aTime-time);
+    
+    
+        // all should be back to sync'd up
+        perform(roles, new TextEvent("Harmonise"), 10000);
+    
+    } //
+
+</dfscore>
