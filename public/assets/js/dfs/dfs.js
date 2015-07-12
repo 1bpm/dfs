@@ -127,7 +127,7 @@ var dfs = {
         },
         su: function (request) {
             if (dfs.superuser && request.su) {
-                dfs.superuser.routing(request.su)
+                dfs.superuser.routing(request.su);
             }
         },
         newSession: function (request) {
