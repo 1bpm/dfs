@@ -30,8 +30,8 @@ function setBrowserSpecifics() {
     }
 
     if (isSafari || version) {
-        view.id("miniDisplayInner").css('-webkit-transform', 'scale(0.5)');
-        view.id("miniDisplayInner").css('-webkit-transform-origin', '0 0');
+        view.id("miniDisplayInner").css('-webkit-transform', 'scale(0.28)');
+        view.id("miniDisplayInner").css('-webkit-transform-origin', 'top left');
     }
 }
 

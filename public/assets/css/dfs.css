@@ -113,12 +113,14 @@
     transform:scale(0.28);
     transform-origin: top left;
     /**
-    zoom : 0.5;
-    -moz-transform:scale(0.5);
+    zoom : 0.5; **/
+    
+    -moz-transform:scale(0.28);
+    -moz-tranform-origin:top left;
+    -ms-transform:scale(0.28);
+    -ms-transform-origin:top left;
+    
   
-  -webkit-transform:scale(0.5);
-  -ms-transform:scale(0.5);
-  **/
   
 }
 

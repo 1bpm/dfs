@@ -12,10 +12,10 @@ var Event = function (inData,displaySpace) {
                 var params={class:classes};
                 var txtLen=data.content.length;
                 var fontSize=128;
-                if (txtLen>=50) fontSize=20;
-                if (txtLen<45) fontSize=30;
-                if (txtLen<40) fontSize=40;
-                if (txtLen<35) fontSize=50;
+                if (txtLen>=50) fontSize=40;
+                if (txtLen<45) fontSize=50;
+                if (txtLen<40) fontSize=60;
+                if (txtLen<35) fontSize=70;
                 if (txtLen<30) fontSize=80;
                 if (txtLen<25) fontSize=100;
                 if (txtLen<20) fontSize=120;
