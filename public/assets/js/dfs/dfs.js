@@ -18,21 +18,21 @@ function setBrowserSpecifics() {
     window.WebSocket = window.WebSocket || window.MozWebSocket;
     window.AudioContext = window.AudioContext || window.webkitAudioContext;
 
-//    var version = false,
-//            isSafari = Object.prototype.toString.call(window.HTMLElement).indexOf('Constructor') > 0,
-//            isOpera = !!window.opera || navigator.userAgent.indexOf(' OPR/') >= 0,
-//            isChrome = !!window.chrome && !isOpera;
-//    if (isChrome) {
-//        version = (window.navigator.appVersion.match(/Chrome\/(\d+)\./) !== null) ?
-//                parseInt(window.navigator.appVersion.match(/Chrome\/(\d+)\./)[1], 10) :
-//                0;
-//        version = (version >= 10) ? true : false;
-//    }
-//
-//    if (isSafari || version) {
-//        view.id("miniDisplayInner").css('-webkit-transform', 'scale(0.5)');
-//        view.id("miniDisplayInner").css('-webkit-transform-origin', '0 0');
-//    }
+    var version = false,
+            isSafari = Object.prototype.toString.call(window.HTMLElement).indexOf('Constructor') > 0,
+            isOpera = !!window.opera || navigator.userAgent.indexOf(' OPR/') >= 0,
+            isChrome = !!window.chrome && !isOpera;
+    if (isChrome) {
+        version = (window.navigator.appVersion.match(/Chrome\/(\d+)\./) !== null) ?
+                parseInt(window.navigator.appVersion.match(/Chrome\/(\d+)\./)[1], 10) :
+                0;
+        version = (version >= 10) ? true : false;
+    }
+
+    if (isSafari || version) {
+        view.id("miniDisplayInner").css('-webkit-transform', 'scale(0.5)');
+        view.id("miniDisplayInner").css('-webkit-transform-origin', '0 0');
+    }
 }
 
 var cookie = {
@@ -192,6 +192,9 @@ var dfs = {
         },
         observeEvent: function (request) {
             dfs.observer.runEvent(request);
+        },
+        observeCache:function(request) {
+            dfs.observer.cache(request.event,request.role);
         },
         setupObserver: function (request) {
             dfs.observer = new Observer();

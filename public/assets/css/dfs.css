@@ -109,7 +109,7 @@
     height:357%;
     
     
-    zoom:0.28;
+    /** zoom:0.28; **/
     transform:scale(0.28);
     transform-origin: top left;
     /**
