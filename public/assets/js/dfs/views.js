@@ -276,7 +276,7 @@ window.view = {
         },
         performanceAvailable: {
             show: ["performer", "performerChoice"],
-            hide: ["loading", "greeting", "performanceList", "performance"],
+            hide: ["loading", "greeting", "performanceList", "performance","performerPrepare","prepareNormal"],
             run: function (data) {
 
                 if (dfs.superuser) {
