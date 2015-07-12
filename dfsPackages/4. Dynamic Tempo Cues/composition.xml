@@ -6,6 +6,7 @@
         tempo: 100,                 // set the default tempo to 100bpm
         duration: 60000,            // in milliseconds
         throb: true,                // throb the main display of all events
+        throbAdapt:true,            // glide the tempo between events
         introductionText: "This is an introduction to using dynamic tempo cues. Given that the tempos of an event and the next are given, dfscore will dynamically interpolate between them, in time for the throbbing of the preview display. However be aware of the awkward results from having two non-corresponding times/tempos",
     });
 

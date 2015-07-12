@@ -163,22 +163,23 @@ var Event = function (inData,displaySpace) {
                 }
                 self.throbStart=throbStartTime=0;
                 beats=duration/beatDuration;
-                if (nextBpm) {
+                if (nextBpm && self.event.throbAdapt) {
                     var timeRatio=(nextBpm<self.bpm)?
                         (nextBpm-self.bpm)/alignTempoBy:
                         (self.bpm-nextBpm)/alignTempoBy;
                 }
                 
             }
+            
             var current=throbStartTime;
             var synced=false;
             function doThrob() {
                 
                 // main event before preview flash
-                if (main && alignTempoBy && current<alignTempoBy) {
+                if (main && self.event.throbAdapt && alignTempoBy && current<alignTempoBy) {
                     var rat=current*timeRatio;
                     beatDuration=(nextBpm>=self.bpm)?
-                        1000*(60/(self.bpm-rat)):    // testy testy
+                        1000*(60/(self.bpm-rat)):    
                         1000*(60/(self.bpm+rat));
                 
                     // adjust the last beat
@@ -188,7 +189,7 @@ var Event = function (inData,displaySpace) {
                     }                
                 
                 // if for some reason the main flash goes over into the preview flash
-                } else if (main && alignTempoBy && current>=alignTempoBy) {
+                } else if (main && self.event.throbAdapt && alignTempoBy && current>=alignTempoBy) {
                     beatDuration = ((60 / nextBpm) * 1000);
                     if (!synced) {
                         synced=true;
