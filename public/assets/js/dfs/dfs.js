@@ -56,13 +56,25 @@ var cookie = {
     }
 };
 
+function testTimeout(fn, t) {
+  var mLen=Math.floor(t/2);  
+  var begin = new Date().getTime();
+  var end = begin + t;
+  setTimeout(function() {
+    // Measure again properly
+    var now = new Date().getTime();
+    setTimeout(fn, end - now);
+  }, mLen);
+};
+
 function realTimeout(oncomplete, length) {
-    return setTimeout(oncomplete,length);
-    if (length < 200) {
+    return testTimeout(oncomplete,length);
+    //return setTimeout(oncomplete,length);
+    if (length < 100) {
         setTimeout(oncomplete, length);
         return;
     }
-    var steps = (length / 200);
+    var steps = (length / 100);
     var speed = length / steps;
     var count = 0;
     var start = new Date().getTime();

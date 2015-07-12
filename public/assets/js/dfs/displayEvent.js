@@ -23,7 +23,7 @@ var Event = function (inData,displaySpace) {
                 if (txtLen<10) fontSize=230;
                 if (txtLen<5) fontSize=300;
                 var ht=$("<div />",params)
-                        .css("font-size",Math.floor(fontSize*scale)+"px")
+                        .css("font-size",Math.floor(fontSize)+"px")
                         .text(data.content);
                 return ht;
             };
