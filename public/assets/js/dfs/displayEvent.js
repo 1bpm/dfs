@@ -1,29 +1,41 @@
 
-var Event = function (inData,displaySpace) {
-    if (!displaySpace) displaySpace="";
-    
+var Event = function (inData, displaySpace) {
+    if (!displaySpace)
+        displaySpace = "";
+
     var displayEvents = {
         text: function (data) {
             this.data = data;
             this.html = function () {
-                var scale=1200/window.screen.width;
-                var classes="textDisplayEvent";
-                if (data.class) classes+=" "+data.class;
-                var params={class:classes};
-                var txtLen=data.content.length;
-                var fontSize=128;
-                if (txtLen>=50) fontSize=40;
-                if (txtLen<45) fontSize=50;
-                if (txtLen<40) fontSize=60;
-                if (txtLen<35) fontSize=70;
-                if (txtLen<30) fontSize=80;
-                if (txtLen<25) fontSize=100;
-                if (txtLen<20) fontSize=120;
-                if (txtLen<15) fontSize=180;
-                if (txtLen<10) fontSize=230;
-                if (txtLen<5) fontSize=300;
-                var ht=$("<div />",params)
-                        .css("font-size",Math.floor(fontSize)+"px")
+                var scale = 1200 / window.screen.width;
+                var classes = "textDisplayEvent";
+                if (data.class)
+                    classes += " " + data.class;
+                var params = {class: classes};
+                var txtLen = data.content.length;
+                var fontSize = 128;
+                if (txtLen >= 50)
+                    fontSize = 40;
+                if (txtLen < 45)
+                    fontSize = 50;
+                if (txtLen < 40)
+                    fontSize = 60;
+                if (txtLen < 35)
+                    fontSize = 70;
+                if (txtLen < 30)
+                    fontSize = 80;
+                if (txtLen < 25)
+                    fontSize = 100;
+                if (txtLen < 20)
+                    fontSize = 120;
+                if (txtLen < 15)
+                    fontSize = 180;
+                if (txtLen < 10)
+                    fontSize = 230;
+                if (txtLen < 5)
+                    fontSize = 300;
+                var ht = $("<div />", params)
+                        .css("font-size", Math.floor(fontSize) + "px")
                         .text(data.content);
                 return ht;
             };
@@ -32,20 +44,22 @@ var Event = function (inData,displaySpace) {
             this.data = data;
 
             this.html = function () {
-                var classes="imageDisplayEvent";
-                if (data.class) classes+=" "+data.class;
-                
-                var ht=$("<div />",{
-                    class:classes
-                }).css("background-image","url('/assets/performance/"+data.content+"')");
+                var classes = "imageDisplayEvent";
+                if (data.class)
+                    classes += " " + data.class;
+
+                var ht = $("<div />", {
+                    class: classes
+                }).css("background-image", "url('/assets/performance/" + data.content + "')");
                 return ht;
             };
-            
+
             this.preScript = function (context) {
                 view.id("performance").show();
                 context.show();
-                context.hide(); 
-                if (!dfs.live) view.id("performance"+displaySpace).hide();
+                context.hide();
+                if (!dfs.live)
+                    view.id("performance" + displaySpace).hide();
             };
         },
         html: function (data) {
@@ -56,22 +70,23 @@ var Event = function (inData,displaySpace) {
         },
         script: function (data) {
             this.data = data;
-            var identifier=data.displayArea+data.name+displaySpace;
+            var identifier = data.displayArea + data.name + displaySpace;
             this.getScript = function () {
                 var scriptRun = "var context=$('#innerScript" + identifier + "'); " + data.content[1];
                 return scriptRun;
             };
-            
-            this.preScript=function(context) {
-                if (!data.content[0]) return;
+
+            this.preScript = function (context) {
+                if (!data.content[0])
+                    return;
                 var scriptRun = "var context=$('#innerScript" + identifier + "'); " + data.content[0];
                 eval(scriptRun);
             };
 
             this.html = function () {
-                var ht=$("<div />",{
-                    class:"scriptEvent",
-                    id:"innerScript"+identifier
+                var ht = $("<div />", {
+                    class: "scriptEvent",
+                    id: "innerScript" + identifier
                 });
                 return ht;
             };
@@ -79,15 +94,16 @@ var Event = function (inData,displaySpace) {
         },
         score: function (data) {
             this.data = data;
-            var identifier=data.displayArea + data.name+displaySpace;
+            var identifier = data.displayArea + data.name + displaySpace;
             var tabdiv;
             this.html = function () {
-                var classes="vexScore vex-tabdiv";
-                if (data.class) classes+=" "+data.class;
-                
-                var ht=$("<div />",{
-                    id:"scEv"+identifier,
-                    class:classes
+                var classes = "vexScore vex-tabdiv";
+                if (data.class)
+                    classes += " " + data.class;
+
+                var ht = $("<div />", {
+                    id: "scEv" + identifier,
+                    class: classes
                 }).text(data.content);
                 var htVal = '<div width="800" height="768" scale="1" id="scEv' + identifier + '" class="vexScore vex-tabdiv">' + data.content + '</div>';
                 return htVal;
@@ -117,7 +133,7 @@ var Event = function (inData,displaySpace) {
         this.ready = false;
         var length = 0;
         this.div = null;
-        this.throbStart=null;
+        this.throbStart = null;
         this.miniEvent = null;
 
 
@@ -140,77 +156,79 @@ var Event = function (inData,displaySpace) {
 
         this.throb = function (duration) {
             var main = (self.event.displayArea === "main") ? true : false;
-            var throbStartTime = duration * 0.25;
+            var throbStartTime = 0;// = duration * 0.25;
             var beatDuration = ((60 / self.bpm) * 1000);
-            var beats=4;
+            var beats = 4;
             var fadeTime = beatDuration * 0.6;
-            if (fadeTime>250) fadeTime=250;
+            if (fadeTime > 250)
+                fadeTime = 250;
             var currentBeat = 1;
             if (!main) { // mini event throbbing, beats back from duration         
                 for (beats = 4; beats > 0; beats--) {
-                    if (beats!==3) {
-                    var test = (duration - (beatDuration * beats)); // when to start preview flash
-                    if (test > duration * 0.4) { // if start is more than 0.4 of event
-                        self.throbStart=throbStartTime = test;
-                        break;
+                    if (beats !== 3) {
+                        var test = (duration - (beatDuration * beats)); // when to start preview flash
+                        if (test > duration * 0.4) { // if start is more than 0.4 of event
+                            self.throbStart = throbStartTime = test;
+                            break;
+                        }
                     }
                 }
-                }
             } else { // main event flash, 
-                if (self.miniEvent && self.miniEvent.throbStart) {
-                    var alignTempoBy=self.miniEvent.throbStart;
-                    var nextBpm=self.miniEvent.bpm;
+                if (self.event.throbAdapt && self.miniEvent && self.miniEvent.throbStart) {
+                    var alignTempoBy = self.miniEvent.throbStart;
+                    var nextBpm = self.miniEvent.bpm;
                 }
-                self.throbStart=throbStartTime=0;
-                beats=duration/beatDuration;
+                
+                self.throbStart = throbStartTime = 0;
+                beats = duration / beatDuration;
+                
                 if (nextBpm && self.event.throbAdapt) {
-                    var timeRatio=(nextBpm<self.bpm)?
-                        (nextBpm-self.bpm)/alignTempoBy:
-                        (self.bpm-nextBpm)/alignTempoBy;
-                }
-                
-            }
-            
-            var current=throbStartTime;
-            var synced=false;
-            function doThrob() {
-                
-                // main event before preview flash
-                if (main && self.event.throbAdapt && alignTempoBy && current<alignTempoBy) {
-                    var rat=current*timeRatio;
-                    beatDuration=(nextBpm>=self.bpm)?
-                        1000*(60/(self.bpm-rat)):    
-                        1000*(60/(self.bpm+rat));
-                
-                    // adjust the last beat
-                    if (current+beatDuration>=alignTempoBy) {
-                        synced=true;
-                        beatDuration=alignTempoBy-current;
-                    }                
-                
-                // if for some reason the main flash goes over into the preview flash
-                } else if (main && self.event.throbAdapt && alignTempoBy && current>=alignTempoBy) {
-                    beatDuration = ((60 / nextBpm) * 1000);
-                    if (!synced) {
-                        synced=true;
-                        beatDuration-=alignTempoBy-current;
-                    } // shouldn't get to this
-                    
-                // is mini event, or bpm is the same as next bpm    
-                } else { 
-                    beatDuration = ((60 / self.bpm) * 1000);
+                    var timeRatio = (nextBpm < self.bpm) ?
+                            (nextBpm - self.bpm) / alignTempoBy :
+                            (self.bpm - nextBpm) / alignTempoBy;
                 }
 
-                view.id(theEvent.data.displayArea + "Throb"+displaySpace).css("opacity","0.7").show().fadeOut(fadeTime);
-                
-                if (current+beatDuration < duration) {
-                    realTimeout(doThrob, beatDuration);
-                    current+=beatDuration;
-                    currentBeat++;
-                }
             }
+            var current = throbStartTime;
+            var synced = false;
+            function doThrob() {
+
+                // main event before preview flash
+                if (main && self.event.throbAdapt && alignTempoBy && current < alignTempoBy) {
+                    var rat = current * timeRatio;
+                    beatDuration = (nextBpm >= self.bpm) ?
+                            1000 * (60 / (self.bpm - rat)) :
+                            1000 * (60 / (self.bpm + rat));
+
+                    // adjust the last beat
+                    if (current + beatDuration >= alignTempoBy) {
+                        synced = true;
+                        beatDuration = alignTempoBy - current;
+                    }
+
+                    // if for some reason the main flash goes over into the preview flash
+                } else if (main && self.event.throbAdapt && alignTempoBy && current >= alignTempoBy) {
+                    beatDuration = ((60 / nextBpm) * 1000);
+                    if (!synced) {
+                        synced = true;
+                        beatDuration -= alignTempoBy - current;
+                    } // shouldn't get to this
+
+                    // is mini event, or bpm is the same as next bpm    
+                } else {
+                    beatDuration = ((60 / self.bpm) * 1000);
+                }
+                
+                view.id(theEvent.data.displayArea + "Throb" + displaySpace).css("opacity", "0.8").show().fadeOut(fadeTime);
+                if (current + beatDuration < duration) {
+                    realTimeout(doThrob, Math.floor(beatDuration));
+                    current += beatDuration;
+                    currentBeat++;
+                } 
+            }
+
             
-            realTimeout(doThrob, throbStartTime);
+            realTimeout(doThrob, Math.floor(throbStartTime));
         };
 
         this.run = function (completeFunction, durationOverride) {
@@ -226,57 +244,60 @@ var Event = function (inData,displaySpace) {
             }
 
             if (completeFunction)
-                realTimeout(function(){
-                  //  self.stop();
+                realTimeout(function () {
+                    //  self.stop();
                     completeFunction();
                 }, duration);
-            
-            
-            
-            
+
+
+
+
 
             if (self.event.showNextEvent && self.miniEvent) {
-                view.id("miniDisplay"+displaySpace).show();
-                self.miniEvent.miniEvent=null;
+                view.id("miniDisplay" + displaySpace).show();
+                self.miniEvent.miniEvent = null;
                 self.miniEvent.getDiv().show();
                 self.miniEvent.runScript(duration);
                 if (self.event.throbNext) {
                     self.miniEvent.throb(duration);
-                }          
+                }
             } else {
-                view.id("miniDisplay"+displaySpace).hide();
+                view.id("miniDisplay" + displaySpace).hide();
             }
-            
-            if (self.event.throb) self.throb(duration);
 
-            if (self.runScript) self.runScript(duration);
+            if (self.event.throb) {
+                self.throb(duration);
+            } 
+
+            if (self.runScript)
+                self.runScript(duration);
             self.getDiv().show();
-            
-            var dfsSpecial=(self.event.name.substr(0,4)==="_dfs")?true:false;
-            
 
-            if (self.event.eventCounter 
-                    && dfs.eventNum<=dfs.eventTotal 
+            var dfsSpecial = (self.event.name.substr(0, 4) === "_dfs") ? true : false;
+
+
+            if (self.event.eventCounter
+                    && dfs.eventNum <= dfs.eventTotal
                     && !dfsSpecial) {
-                view.id("counterDisplay"+displaySpace).text(dfs.eventNum+"/"+dfs.eventTotal).show();
+                view.id("counterDisplay" + displaySpace).text(dfs.eventNum + "/" + dfs.eventTotal).show();
             } else {
-                view.id("counterDisplay"+displaySpace).hide();
+                view.id("counterDisplay" + displaySpace).hide();
             }
-            
+
             if (dfsSpecial && self.event.progressBar) {
-                view.id("performanceProgressBar"+displaySpace).css("background-color","red");
+                view.id("performanceProgressBar" + displaySpace).css("background-color", "red");
             } else {
-                view.id("performanceProgressBar"+displaySpace).css("background-color","#000000");
+                view.id("performanceProgressBar" + displaySpace).css("background-color", "#000000");
             }
 
             if (self.event.progressBar) {
-                view.id("performanceProgressBar"+displaySpace).show().animate({
+                view.id("performanceProgressBar" + displaySpace).show().animate({
                     width: "100%"
                 }, duration, "linear", function () {
                     // completeFunction used to be here
                 });
             } else {
-                view.id("performanceProgressBar"+displaySpace).hide();
+                view.id("performanceProgressBar" + displaySpace).hide();
             }
 
 
@@ -285,16 +306,17 @@ var Event = function (inData,displaySpace) {
         };
 
         this.runScript = function (duration) {
-            if (!duration) duration=5000;
+            if (!duration)
+                duration = 5000;
             if (self.runningFunction) {
                 clearTimeout(self.runningFunction);
                 delete self.runningFunction;
 
-            } 
+            }
             if (theEvent.getScript) {
                 try {
                     self.runningFunction = setTimeout(function () {
-                        eval("var duration="+(duration-30)+";"+theEvent.getScript());
+                        eval("var duration=" + (duration - 30) + ";" + theEvent.getScript());
                     }, 0);
                 } catch (e) {
                     dfs.log.warn("cannot exec script");
@@ -330,29 +352,28 @@ var Event = function (inData,displaySpace) {
             var displayArea;
             switch (dispArea) {
                 case "main":
-                    displayArea = "#mainDisplay"+displaySpace;
+                    displayArea = "#mainDisplay" + displaySpace;
                     break;
                 case "mini":
-                    displayArea = "#miniDisplayInner"+displaySpace;
+                    displayArea = "#miniDisplayInner" + displaySpace;
                     break;
                 case "aux":
-                    displayArea = "#auxDisplay"+displaySpace;
+                    displayArea = "#auxDisplay" + displaySpace;
                     break;
                 default:
-                    displayArea = "#mainDisplay"+displaySpace;
+                    displayArea = "#mainDisplay" + displaySpace;
             }
-            var innerEvent=$("<div />", {
+            var innerEvent = $("<div />", {
                 class: dispArea + "Event event",
                 id: "event" + dispArea + self.id + displaySpace
             }).append(theEvent.html());
-            console.log(theEvent.html());
-                    
+
             $(displayArea).append(innerEvent);
 
             //    '<div class="' + dispArea
             //   + 'Event" id="event' + dispArea + self.id + '">' + theEvent.html() + '</div>');
 
-            self.div = "#event" + dispArea + self.id+displaySpace;
+            self.div = "#event" + dispArea + self.id + displaySpace;
             self.stop();
             if (theEvent.preScript) {
                 theEvent.preScript(self.getDiv());

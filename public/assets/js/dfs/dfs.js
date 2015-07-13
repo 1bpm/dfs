@@ -57,13 +57,14 @@ var cookie = {
 };
 
 function testTimeout(fn, t) {
+    if (t<=10) return setTimeout(fn,t);
   var mLen=Math.floor(t/2);  
   var begin = new Date().getTime();
   var end = begin + t;
   setTimeout(function() {
     // Measure again properly
     var now = new Date().getTime();
-    setTimeout(fn, end - now);
+    setTimeout(fn, Math.floor(end - now));
   }, mLen);
 };
 
@@ -114,7 +115,6 @@ var dfs = {
             for (var evName in request.events) {
                 var item = request.events[evName];
                 try {
-                    console.log("try cache " + evName);
                     if (dfs.events[evName]) {
                         dfs.events[evName].main.getDiv().remove();
                         dfs.events[evName].mini.getDiv().remove();
@@ -266,6 +266,7 @@ var dfs = {
             this._write("error", text);
         },
         debug: function (text) {
+            if (!dfs.config.debug) return;
             console.log("debug: " + text);
             if (dfs.config.debug)
                 this._write("debug", text);

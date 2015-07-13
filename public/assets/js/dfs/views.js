@@ -118,7 +118,6 @@ window.view = {
                 for (var evName in data.events) {
                     var item = data.events[evName];
                     try {
-                        console.log("create event " + evName);
                         dfs.events[evName] = new Event(item);
                     } catch (error) {
                         dfs.log.warn("error creating event " + evName + ": " + error);
@@ -128,7 +127,6 @@ window.view = {
                 for (var trName in data.role.triggers) {
                     var item = data.role.triggers[trName];
                     try {
-                        console.log("create trigger " + trName);
                         dfs.triggers[trName] = new Trigger(item);
                     } catch (error) {
                         dfs.log.warn("error creating trigger " + trName + ": " + error);
@@ -390,7 +388,6 @@ window.view = {
             hide: ["loading"],
             run: function (data) {
                 var tbl = {Name: [], Information: [], Assigned: [], Action: []};
-                console.log(data);
                 var statusPrompt = "";
                 if (!data.noPrompt)
                     statusPrompt = "Please select a role from the list below to take part in the performance"
