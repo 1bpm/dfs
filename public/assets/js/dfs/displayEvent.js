@@ -159,9 +159,7 @@ var Event = function (inData, displaySpace) {
             var throbStartTime = 0;// = duration * 0.25;
             var beatDuration = ((60 / self.bpm) * 1000);
             var beats = 4;
-            var fadeTime = beatDuration * 0.6;
-            if (fadeTime > 250)
-                fadeTime = 250;
+            
             var currentBeat = 1;
             if (!main) { // mini event throbbing, beats back from duration         
                 for (beats = 4; beats > 0; beats--) {
@@ -189,10 +187,10 @@ var Event = function (inData, displaySpace) {
                 }
 
             }
+            console.log("setthrob "+main,throbStartTime);
             var current = throbStartTime;
             var synced = false;
             function doThrob() {
-
                 // main event before preview flash
                 if (main && self.event.throbAdapt && alignTempoBy && current < alignTempoBy) {
                     var rat = current * timeRatio;
@@ -218,17 +216,21 @@ var Event = function (inData, displaySpace) {
                 } else {
                     beatDuration = ((60 / self.bpm) * 1000);
                 }
+                var fadeTime = Math.floor(beatDuration * 0.6);
+                if (fadeTime > 250)
+                    fadeTime = 250;
+                if (fadeTime<25) fadeTime=25;
                 
                 view.id(theEvent.data.displayArea + "Throb" + displaySpace).css("opacity", "0.8").show().fadeOut(fadeTime);
                 if (current + beatDuration < duration) {
-                    realTimeout(doThrob, Math.floor(beatDuration));
+                    realTimeout(doThrob, beatDuration);
                     current += beatDuration;
                     currentBeat++;
                 } 
             }
 
             
-            realTimeout(doThrob, Math.floor(throbStartTime));
+            realTimeout(doThrob, throbStartTime);
         };
 
         this.run = function (completeFunction, durationOverride) {
