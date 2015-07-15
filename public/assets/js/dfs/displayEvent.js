@@ -1,4 +1,5 @@
 
+
 var Event = function (inData, displaySpace) {
     if (!displaySpace)
         displaySpace = "";
@@ -187,7 +188,6 @@ var Event = function (inData, displaySpace) {
                 }
 
             }
-            console.log("setthrob "+main,throbStartTime);
             var current = throbStartTime;
             var synced = false;
             function doThrob() {
@@ -221,8 +221,13 @@ var Event = function (inData, displaySpace) {
                     fadeTime = 250;
                 if (fadeTime<25) fadeTime=25;
                 
-                view.id(theEvent.data.displayArea + "Throb" + displaySpace).css("opacity", "0.8").show().fadeOut(fadeTime);
-                if (current + beatDuration < duration) {
+                view.id(theEvent.data.displayArea + "Throb" + displaySpace)
+                        .css({opacity:0.8,transition:'none'});
+                setTimeout(function(){
+                view.id(theEvent.data.displayArea + "Throb" + displaySpace)        
+                        .css({opacity:0,transition:'opacity '+(fadeTime/1000)+'s linear'});//fadeOut(fadeTime);
+            },20);
+                    if (current + beatDuration < duration) {
                     realTimeout(doThrob, beatDuration);
                     current += beatDuration;
                     currentBeat++;
@@ -293,11 +298,17 @@ var Event = function (inData, displaySpace) {
             }
 
             if (self.event.progressBar) {
-                view.id("performanceProgressBar" + displaySpace).show().animate({
-                    width: "100%"
-                }, duration, "linear", function () {
-                    // completeFunction used to be here
-                });
+//                view.id("performanceProgressBar" + displaySpace).show().animate({
+//                    width: "100%"
+//                }, duration, "linear", function () {
+//                    // completeFunction used to be here
+//                });s
+                view.id("performanceProgressBar"+displaySpace).show()
+                        .css({width:"0%",transition:"none"});
+                setTimeout(function(){
+                view.id("performanceProgressBar"+displaySpace).show()
+                        .css({width:"100%",transition:"width "+(duration/1000)+"s linear"});
+            },18);
             } else {
                 view.id("performanceProgressBar" + displaySpace).hide();
             }

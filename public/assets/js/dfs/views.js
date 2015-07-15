@@ -64,7 +64,7 @@ window.view = {
             show: ["performance"]
         },
         performanceStart: {
-            show: ["performerPrepare", "prepareReady"],
+            show: ["performerPrepare"],
             hide: ["performanceControl", "prepareCancel", "performerChoice", "prepareNormal"],
             run: function (data) {
                 if (dfs.roleAssigned)
@@ -274,7 +274,7 @@ window.view = {
         },
         performanceAvailable: {
             show: ["performer", "performerChoice"],
-            hide: ["loading", "greeting", "performanceList", "performance","performerPrepare","prepareNormal"],
+            hide: ["loading", "greeting", "performanceList", "performance"],
             run: function (data) {
 
                 if (dfs.superuser) {
@@ -290,7 +290,11 @@ window.view = {
                 } else if (dfs.roleAssigned) {
                     view.id("performerChoice").hide();
                     return;
+                } else {
+                    view.id("performerPrepare").hide();
+                    view.id("prepareNormal").hide();
                 }
+                 
                 view.id("performerPrepare").hide();
 
 
@@ -387,17 +391,16 @@ window.view = {
             show: ["performanceRoles"],
             hide: ["loading"],
             run: function (data) {
-                var tbl = {Name: [], Information: [], Assigned: [], Action: []};
+                var tbl = {Name:[],Information: [], Assigned: [], Action: []};
                 var statusPrompt = "";
-                if (!data.noPrompt)
-                    statusPrompt = "Please select a role from the list below to take part in the performance"
+//                if (!data.noPrompt)
+  //                  statusPrompt = "Please select a role from the list below to take part in the performance";
                 for (var key in data) {
                     var item = data[key];
                     var id = item.name;
-                    tbl.Name.push("<h3>" + item.name + "<h3>");
                     var info = "";
                     var show = ["clef", "instrument", "key"];
-
+                    tbl.Name.push("<h3>"+item.name+"</h3>");
                     // show additional fields for superuser
                     if (dfs.superuser) {
                         show.push("totalEvents");
@@ -422,13 +425,13 @@ window.view = {
                     // allow it to be chosen if assigned, and kicked if assigned and ur superuser
                     if (item.assignable && !dfs.roleAssigned) {
                         actions.append($("<button />", {
-                            class: "btn btn-default",
+                            class: "btn btn-danger",
                             dfsid: item.name
-                        }).text("Select").click(function () {
+                        }).text("Select "+item.name).click(function () {
                             dfs.emit("selectRole", {name: $(this).attr("dfsid")});
                         }));
                     } else {
-
+                        
                         // not assignable
                     }
                     if (Object.keys(item.roleMembers).length > 0) {
@@ -455,18 +458,15 @@ window.view = {
 
 
                     } else {
-                        assigned = "Not assigned";
+                        assigned = "";//Not assigned";
                     }
 
                     tbl.Assigned.push(assigned);
                     tbl.Action.push(actions);
                 }
 
-                view.tableBuilder(view.id("performanceRoles"), tbl,
-                        $("<div />", {
-                            class: "alert alert-info",
-                            id: "roleChoicePrompt"
-                        }).text(statusPrompt));
+                view.tableBuilder(view.id("performanceRoles"), tbl,true);
+                if (!dfs.roleAssigned) view.id("performanceRoles").prepend("<h2>Please select a role</h2><br>");
             }
         },
         eventInspector: {
@@ -646,7 +646,7 @@ window.view = {
 
     },
     // build an actual table - defunct
-    actualTableBuilder: function (tableRef, obj, noheader) {
+    actualTableBuilder: function (tableRef, obj, noHeader) {
 //    var exampleInput_obj = {
 //        name: ["alice", "bob", "eve"],
 //        role: ["lead", "bass", "rhythm"]
@@ -665,11 +665,13 @@ window.view = {
             ind++;
         }
         tableRef.empty();
+        if (!noHeader) {
         var headRow = $("<tr/>");
         for (var i = 0; i < headers.length; i++) {
             headRow.append("<th>" + headers[i] + "</th>");
         }
         tableRef.append(headRow);
+    }
         for (var row = 0; row < rows.length; row++) {
             var theRow = $("<tr/>");
             for (var col = 0; col < headers.length; col++) {

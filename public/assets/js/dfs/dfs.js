@@ -57,55 +57,119 @@ var cookie = {
 };
 
 function testTimeout(fn, t) {
-  if (t<=20) {return setTimeout(fn,t);}
-  var mLen=Math.floor(t*0.5);  
-  var begin = new Date().getTime();
-  var end = begin + t;
-  setTimeout(function() {
-    // Measure again properly
-    var now = new Date().getTime();
-    var wait=(end-now>0)?end-now:0;
-    setTimeout(fn, Math.floor(wait));
-  }, mLen);
-};
+    if (t <= 10) {
+        return setTimeout(fn, t);
+    }
+    var mLen = Math.floor(t * 0.5);
+    var begin = new Date().getTime();
+    var end = begin + t;
+    setTimeout(function () {
+        // Measure again properly
+        var now = new Date().getTime();
+        var wait = (end - now > 0) ? end - now : 0;
+        setTimeout(fn, Math.floor(wait));
+    }, mLen);
+}
+;
 
 function test2Timeout(fn, t) {
-  if (t<=20) {return setTimeout(fn,t);}
-  var steps=Math.floor(t/600); 
-  if (steps<2) steps=2;
-  var begin = new Date().getTime();
-  var end=begin+t;
-  var step=0;
-  var segmentMs=t/steps;
-  function timeAdjuster(){
-      var now=new Date().getTime();
-      if (now>=end) {
-          fn();
-      } else {
-          setTimeout(timeAdjuster,segmentMs);
-      }
-      
-  }
-  timeAdjuster();
-};
+    if (t <= 10) {
+        return setTimeout(fn, t);
+    }
+    var steps = Math.floor(t / 600);
+    if (steps < 2)
+        steps = 2;
+    var begin = new Date().getTime();
+    var end = begin + t;
+    var step = 0;
+    var segmentMs = t / steps;
+    function timeAdjuster() {
+        var now = new Date().getTime();
+        if (step >= steps) {
+            //console.log("st");
+            fn();
+        } else {
+            //console.log("stepp");
+            step++;
+            var time = ((now - begin) - (step * segmentMs));
+            if (time < 1)
+                time = 1;
+            setTimeout(timeAdjuster, time);
+        }
 
-function realTimeout(oncomplete, length) {
-    return test2Timeout(oncomplete,length);
-    //return setTimeout(oncomplete,length);
-    if (length < 20) {
+    }
+    timeAdjuster();
+}
+;
+
+
+
+function test3Timeout(fn, t) {
+    if (t <= 10) {
+        return setTimeout(fn, t);
+    }
+    function doTimer(length, oncomplete)
+    {
+
+        var steps = 2, //(length / 100),// * (resolution / 10),
+                speed = length / steps,
+                count = 0,
+                start = new Date().getTime();
+
+        function instance()
+        {
+            if (count++ == steps)
+            {
+                fn(steps, count);
+            }
+            else
+            {
+                //oninstance(steps, count);
+                console.log("f");
+                var diff = (new Date().getTime() - start) - (count * speed);
+
+                setTimeout(instance, (speed - diff));
+            }
+        }
+
+        setTimeout(instance, speed);
+    }
+    doTimer(t, fn);
+}
+;
+
+function real2Timeout(oncomplete, length) {
+    if (length <= 10) {
         return setTimeout(oncomplete, length);
     }
-    var splices=64;
-    if (length<100000) splices=30;
-    if (length<60000) splices=20;
-    if (length<40000) splices=16;
-    if (length<25000) splices=12;
-    if (length<18000) splices=10;
-    if (length<12000) splices=8;
-    if (length<8000) splices=6;
-    if (length<4000) splices=4;
-    if (length<1000) splices=2;
-    var steps = (length / (length/splices));
+    var steps = Math.round(length / 100);
+    if (steps < 2)
+        steps = 2;
+    var speed = length / steps;
+    var count = 0;
+    var start = performance.now();//aud.currentTime;//new Date().getTime();
+    console.log(speed);
+    function timeInstance() {
+        if (count++ >= steps - 1) {
+            console.log(performance.now() - start);
+            oncomplete();
+        } else {
+
+            var diff = ((performance.now() - start)) - (count * speed);
+            //console.log(count,diff,(speed-diff));           
+            setTimeout(timeInstance, (speed - diff));
+        }
+    }
+    setTimeout(timeInstance, speed);
+}
+
+function realTimeout(oncomplete, length) {
+    return real2Timeout(oncomplete, length);
+    //return setTimeout(oncomplete,length);
+    if (length < 100) {
+        return setTimeout(oncomplete, length);
+    }
+    var steps = (length / (length / 100));
     var speed = length / steps;
     var count = 0;
     var start = new Date().getTime();
@@ -134,6 +198,7 @@ var dfs = {
     triggers: {},
     init: function () {
         setBrowserSpecifics();
+        
         view.state("init");
     },
     clock: 0,
@@ -235,8 +300,8 @@ var dfs = {
         observeEvent: function (request) {
             dfs.observer.runEvent(request);
         },
-        observeCache:function(request) {
-            dfs.observer.cache(request.event,request.role);
+        observeCache: function (request) {
+            dfs.observer.cache(request.event, request.role);
         },
         setupObserver: function (request) {
             dfs.observer = new Observer();
@@ -257,10 +322,11 @@ var dfs = {
             setTimeout(function () {
                 dfs.emit("eventAcknowledged", {id: id, tid: tid});
             }, 0);
-            
-            if (id!=="_dfsPerformanceReady") dfs.eventNum++;
-            view.id("performanceProgressBar").stop();
-            view.id("performanceProgressBar").css("width", "0%");
+
+            if (id !== "_dfsPerformanceReady")
+                dfs.eventNum++;
+//            view.id("performanceProgressBar").stop();
+//            view.id("performanceProgressBar").css("width", "0%");
 
             if (dfs.currentEvent) {
                 if (dfs.currentEvent.stop)
@@ -296,7 +362,8 @@ var dfs = {
             this._write("error", text);
         },
         debug: function (text) {
-            if (!dfs.config.debug) return;
+            if (!dfs.config.debug)
+                return;
             console.log("debug: " + text);
             if (dfs.config.debug)
                 this._write("debug", text);
@@ -354,7 +421,7 @@ var dfs = {
     },
             resetPerformance: function () {
                 dfs.roleAssigned = false;
-                dfs.live=false;
+                dfs.live = false;
                 dfs.role = null;
                 dfs.events = {};
                 for (var t in dfs.triggers) {
@@ -362,7 +429,7 @@ var dfs = {
                 }
                 dfs.triggers = {};
                 dfs.eventNum = 0, dfs.eventTotal = 0;
-                view.id("mainDisplay").empty().append($("<div />", {class:"mainThrob",id: "mainThrob"}));
+                view.id("mainDisplay").empty();//.append($("<div />", {class: "mainThrob", id: "mainThrob"}));
                 view.id("counterDisplay").text("");
                 view.id("miniDisplayInner").empty();
                 view.id("prepareCount").css({

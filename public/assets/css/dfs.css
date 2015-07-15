@@ -217,7 +217,7 @@ event {
     height:100%;
     z-index:56;
     background-color:#4DFF4D;
-    display:none;
+    opacity:0;
 }
 
 .miniThrob {
@@ -227,7 +227,7 @@ event {
     height:100%;
     z-index:56;
     background-color:#FF4D4D;
-    display:none;
+    opacity:0;
 }
 
 .scriptEvent {
