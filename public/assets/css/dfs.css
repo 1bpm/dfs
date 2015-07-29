@@ -107,14 +107,15 @@
     left:0px;
     width:357%;
     height:357%;
-    
+    z-index:57;
     
     /** zoom:0.28; **/
     transform:scale(0.28);
     transform-origin: top left;
     /**
     zoom : 0.5; **/
-    
+    -webkit-transform-origin:top left;
+    -webkit-transform:scale(0.28);
     -moz-transform:scale(0.28);
     -moz-tranform-origin:top left;
     -ms-transform:scale(0.28);
@@ -216,7 +217,7 @@ event {
     left:0px;
     width:100%;
     height:100%;
-    z-index:56;
+   
     background-color:#4DFF4D;
     opacity:0;
 }
@@ -226,7 +227,7 @@ event {
     left:0px;
     width:100%;
     height:100%;
-    z-index:56;
+    
     background-color:#FF4D4D;
     opacity:0;
 }
@@ -244,7 +245,7 @@ event {
 
 
 .vexScore {
-
+    left:5%;
 }
 
 

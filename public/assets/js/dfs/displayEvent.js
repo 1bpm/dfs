@@ -111,6 +111,7 @@ var Event = function (inData, displaySpace) {
             var identifier = data.displayArea + data.name + displaySpace;
             var tabdiv;
             this.html = function () {
+                var scale=(data.displayArea==="main")?1:5;
                 var classes = "vexScore vex-tabdiv";
                 if (data.class)
                     classes += " " + data.class;
@@ -119,7 +120,7 @@ var Event = function (inData, displaySpace) {
                     id: "scEv" + identifier,
                     class: classes
                 }).text(data.content);
-                var htVal = '<div width="' + screen.width * 0.9 + '" height="100%" scale="1" id="scEv' + identifier + '" class="vexScore vex-tabdiv">' + data.content + '</div>';
+                var htVal = '<div width="' + screen.width * 0.9 + '" height="100%" scale="'+scale+'" id="scEv' + identifier + '" class="vexScore vex-tabdiv">' + data.content + '</div>';
                 return htVal;
                 // return ht.html();
             };
