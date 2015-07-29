@@ -195,6 +195,7 @@ event {
 
 }
 
+
 .imageDisplayEvent {
     margin-left:auto;
     background-position:center;
@@ -243,8 +244,7 @@ event {
 
 
 .vexScore {
-    top:30%;
-    left:10%;
+
 }
 
 

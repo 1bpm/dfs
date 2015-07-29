@@ -1,4 +1,17 @@
-
+function transitionTo(items,prop, value, completeFn) {
+    var origValue, item;
+    for (var i = 0, len = items.length; i < len; i++) {
+        item = jQuery(items[i]);
+        origValue = item.css(prop);
+        item.css(prop, value);
+        // if value hasn't changed           
+        if (origValue == item.css(prop)) {
+            completeFn.apply(items[i]);
+        } else {
+            item.one("transitionend", completeFn);
+        }
+    }
+};
 
 var Event = function (inData, displaySpace) {
     if (!displaySpace)
@@ -106,7 +119,7 @@ var Event = function (inData, displaySpace) {
                     id: "scEv" + identifier,
                     class: classes
                 }).text(data.content);
-                var htVal = '<div width="800" height="768" scale="1" id="scEv' + identifier + '" class="vexScore vex-tabdiv">' + data.content + '</div>';
+                var htVal = '<div width="' + screen.width * 0.9 + '" height="100%" scale="1" id="scEv' + identifier + '" class="vexScore vex-tabdiv">' + data.content + '</div>';
                 return htVal;
                 // return ht.html();
             };
@@ -160,7 +173,7 @@ var Event = function (inData, displaySpace) {
             var throbStartTime = 0;// = duration * 0.25;
             var beatDuration = ((60 / self.bpm) * 1000);
             var beats = 4;
-            
+
             var currentBeat = 1;
             if (!main) { // mini event throbbing, beats back from duration         
                 for (beats = 4; beats > 0; beats--) {
@@ -177,10 +190,10 @@ var Event = function (inData, displaySpace) {
                     var alignTempoBy = self.miniEvent.throbStart;
                     var nextBpm = self.miniEvent.bpm;
                 }
-                
+
                 self.throbStart = throbStartTime = 0;
                 beats = duration / beatDuration;
-                
+
                 if (nextBpm && self.event.throbAdapt) {
                     var timeRatio = (nextBpm < self.bpm) ?
                             (nextBpm - self.bpm) / alignTempoBy :
@@ -216,25 +229,50 @@ var Event = function (inData, displaySpace) {
                 } else {
                     beatDuration = ((60 / self.bpm) * 1000);
                 }
-                var fadeTime = Math.floor(beatDuration * 0.6);
+                var fadeTime = Math.round(beatDuration * 0.6);
                 if (fadeTime > 250)
                     fadeTime = 250;
-                if (fadeTime<25) fadeTime=25;
+                if (fadeTime < 25)
+                    fadeTime = 25;
+//                view.id(theEvent.data.displayArea + "Throb" + displaySpace)
+//                        .transition({opacity: 0.8}, 0, "linear")
+//                        .transition({opacity: 0}, fadeTime, "linear");
                 
+//                view.id(theEvent.data.displayArea + "Throb" + displaySpace).css({opacity:0,transition:'opacity '+(fadeTime/1000)+'s linear'});
+//                view.id(theEvent.data.displayArea + "Throb" + displaySpace)
+//                        .on("transitionend",function(){
+//                            console.log("fum");
+//                            $(this).off();
+//                        
+//                });
+//              
+//                setTimeout(function(){
+//                    view.id(theEvent.data.displayArea + "Throb" + displaySpace)
+//                        .css({opacity:0.8,transition:"none"});
+                
+                //fadeOut(fadeTime);
+//            },10);
+
+
+
+                        // css transitions, painful shit with dynamic css
+
                 view.id(theEvent.data.displayArea + "Throb" + displaySpace)
-                        .css({opacity:0.8,transition:'none'});
-                setTimeout(function(){
-                view.id(theEvent.data.displayArea + "Throb" + displaySpace)        
-                        .css({opacity:0,transition:'opacity '+(fadeTime/1000)+'s linear'});//fadeOut(fadeTime);
-            },20);
-                    if (current + beatDuration < duration) {
+                       .css({opacity:0.8,transition:"none"});
+                transitionTo(view.id(theEvent.data.displayArea + "Throb" + displaySpace),"opacity","0.8",function(){
+                       // console.log()
+                            $(this).css({opacity:0,transition:"opacity "+(fadeTime/1000)+"s linear"});
+                                });
+
+
+                if (current + beatDuration < duration) {
                     realTimeout(doThrob, beatDuration);
                     current += beatDuration;
                     currentBeat++;
-                } 
+                }
             }
 
-            
+
             realTimeout(doThrob, throbStartTime);
         };
 
@@ -274,7 +312,7 @@ var Event = function (inData, displaySpace) {
 
             if (self.event.throb) {
                 self.throb(duration);
-            } 
+            }
 
             if (self.runScript)
                 self.runScript(duration);
@@ -297,23 +335,30 @@ var Event = function (inData, displaySpace) {
                 view.id("performanceProgressBar" + displaySpace).css("background-color", "#000000");
             }
 
+            
+//            view.id("performanceProgressBar" + displaySpace).on("transitionend", function (e) {
+//                $(this).off();
+//                
+//                if (self.event.progressBar) {
+//                    view.id("performanceProgressBar" + displaySpace).show()
+//                            .css({width: "100%", transition: "width " + ((duration - 18) / 1000) + "s linear"});
+//                     } else {
+//                    view.id("performanceProgressBar" + displaySpace).hide();
+//                }
+//            });
+//            view.id("performanceProgressBar" + displaySpace).show()
+//                    .css({width: "0%", transition: "width 0s linear"});
+
             if (self.event.progressBar) {
-//                view.id("performanceProgressBar" + displaySpace).show().animate({
-//                    width: "100%"
-//                }, duration, "linear", function () {
-//                    // completeFunction used to be here
-//                });s
-                view.id("performanceProgressBar"+displaySpace).show()
-                        .css({width:"0%",transition:"none"});
-                setTimeout(function(){
-                view.id("performanceProgressBar"+displaySpace).show()
-                        .css({width:"100%",transition:"width "+(duration/1000)+"s linear"});
-            },18);
-            } else {
-                view.id("performanceProgressBar" + displaySpace).hide();
-            }
-
-
+            view.id("performanceProgressBar" + displaySpace).show()
+                    .css({width:0,transition:"none"});
+                    transitionTo(view.id("performanceProgressBar" + displaySpace),"width","0",function(){
+                    $(this).css({width:"100%",transition:"width "+(duration/1000)+"s linear"});
+            });
+           
+                } else {
+                    view.id("performanceProgressBar" + displaySpace).hide();
+                }
 
 
         };

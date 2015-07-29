@@ -56,87 +56,6 @@ var cookie = {
     }
 };
 
-function testTimeout(fn, t) {
-    if (t <= 10) {
-        return setTimeout(fn, t);
-    }
-    var mLen = Math.floor(t * 0.5);
-    var begin = new Date().getTime();
-    var end = begin + t;
-    setTimeout(function () {
-        // Measure again properly
-        var now = new Date().getTime();
-        var wait = (end - now > 0) ? end - now : 0;
-        setTimeout(fn, Math.floor(wait));
-    }, mLen);
-}
-;
-
-function test2Timeout(fn, t) {
-    if (t <= 10) {
-        return setTimeout(fn, t);
-    }
-    var steps = Math.floor(t / 600);
-    if (steps < 2)
-        steps = 2;
-    var begin = new Date().getTime();
-    var end = begin + t;
-    var step = 0;
-    var segmentMs = t / steps;
-    function timeAdjuster() {
-        var now = new Date().getTime();
-        if (step >= steps) {
-            //console.log("st");
-            fn();
-        } else {
-            //console.log("stepp");
-            step++;
-            var time = ((now - begin) - (step * segmentMs));
-            if (time < 1)
-                time = 1;
-            setTimeout(timeAdjuster, time);
-        }
-
-    }
-    timeAdjuster();
-}
-;
-
-
-
-function test3Timeout(fn, t) {
-    if (t <= 10) {
-        return setTimeout(fn, t);
-    }
-    function doTimer(length, oncomplete)
-    {
-
-        var steps = 2, //(length / 100),// * (resolution / 10),
-                speed = length / steps,
-                count = 0,
-                start = new Date().getTime();
-
-        function instance()
-        {
-            if (count++ == steps)
-            {
-                fn(steps, count);
-            }
-            else
-            {
-                //oninstance(steps, count);
-                console.log("f");
-                var diff = (new Date().getTime() - start) - (count * speed);
-
-                setTimeout(instance, (speed - diff));
-            }
-        }
-
-        setTimeout(instance, speed);
-    }
-    doTimer(t, fn);
-}
-;
 
 function real2Timeout(oncomplete, length) {
     if (length <= 10) {
@@ -148,11 +67,12 @@ function real2Timeout(oncomplete, length) {
     var speed = length / steps;
     var count = 0;
     var start = performance.now();//aud.currentTime;//new Date().getTime();
-    console.log(speed);
     function timeInstance() {
         if (count++ >= steps - 1) {
-            console.log(performance.now() - start);
-            oncomplete();
+            var diff=(performance.now() - start)-length;
+            if (diff>5) {
+                setTimeout(oncomplete,diff);
+            } else oncomplete();
         } else {
 
             var diff = ((performance.now() - start)) - (count * speed);
@@ -204,7 +124,7 @@ var dfs = {
     clock: 0,
     routes: {
         clock: function (request) {
-
+            
         },
         eventCache: function (request) {
             for (var evName in request.events) {
@@ -267,10 +187,12 @@ var dfs = {
             }
         },
         test: function (request) {
+            var out = request.testData.length;
+            return dfs.emit("cache",{length:out,cacheID:request.cacheID,data:request.testData});//dfs.emit("test", {acknowledged: true, length: out});
             var tests = {
                 latency: function (request) {
                     var out = request.testData.length;
-                    dfs.emit("testLatency", {acknowledged: true, length: out});
+                    dfs.emit("testLatency", {acknowledged: true, length: out,data:out});
                 },
                 audio: function (request) {
                     var available = true;
@@ -322,8 +244,9 @@ var dfs = {
             setTimeout(function () {
                 dfs.emit("eventAcknowledged", {id: id, tid: tid});
             }, 0);
-
-            if (id !== "_dfsPerformanceReady")
+            
+            var dfsSpecial = (id.substr(0, 4) === "_dfs") ? true : false;
+            if (!dfsSpecial)
                 dfs.eventNum++;
 //            view.id("performanceProgressBar").stop();
 //            view.id("performanceProgressBar").css("width", "0%");
