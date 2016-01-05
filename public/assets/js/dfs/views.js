@@ -494,6 +494,7 @@ window.view = {
             show: ["performer", "performanceList", "performerChoice"],
             hide: ["performerMenuContainer", "performanceMeta", "performance", "performanceRoles", "performanceControl", "performerPrepare", "greeting", "loading"],
             run: function (request) {
+	        dfs.roleAssigned = false;
                 var packages = request.packages;
                 for (var i in packages.Title) {
                     var key = packages.key[i];

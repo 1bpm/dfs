@@ -173,7 +173,7 @@ var dfs = {
             if (view.currentState === "login") {
                 view.id("anonymousObserver").show();
             } else if (!dfs.roleAssigned || dfs.superuser) {
-                //dfs.roleAssigned = true;
+                dfs.roleAssigned = true;
                 view.state("performanceAvailable", request);
             }
         },

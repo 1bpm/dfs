@@ -14,6 +14,7 @@ var Admin=function() {
             view.tableBuilder(view.id("activeRoleList"), request.roles);
         },
         listPackages: function (request) {
+            dfs.roleAssigned=false;
             view.state("packageList", request);
         },
         parseErrors: function (data) {
@@ -42,7 +43,6 @@ var Admin=function() {
 
 
     this.routing=function(request) {
-        console.log(request);
         if (request.route in routes) {
             routes[request.route](request);
         } else {
