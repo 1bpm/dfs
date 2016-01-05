@@ -7,7 +7,7 @@ npm.load(function(npmError){
     console.log("Setting up dependencies");
     
     // attempt dynamic (re)install of fibers
-    npm.commands.install(["fibers"],function(installError,data){
+    npm.commands.install(["fibers@1.0.6"],function(installError,data){
         if (installError) throw "There was an error installing Fibers. Please attempt this manually.";
         
         // everything ok, launch the dfscore server
